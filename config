@@ -1,0 +1,6 @@
+Flash SPI speed
+Optimization Level
+Minimum Supported ESP32-S3 Revision
+configUSE_TRACE_FACILITY
+configUSE_STATS_FORMATTING_FUNCTIONS
+Maximum log verbosity

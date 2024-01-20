@@ -36,7 +36,11 @@
         "esp_netif_sntp.h": "c",
         "sntp.h": "c",
         "time.h": "c",
-        "clock.h": "c"
+        "clock.h": "c",
+        "display.h": "c",
+        "lvgl.h": "c",
+        "esp_lvgl_port.h": "c",
+        "esp_lcd_panel_ops.h": "c"
     },
     "cmake.configureOnOpen": false
 }

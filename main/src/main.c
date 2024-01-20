@@ -8,6 +8,7 @@
 #include "main.h"
 #include "wifi.h"
 #include "clock.h"
+#include "display.h"
 
 void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 {
@@ -41,13 +42,22 @@ static void led_task(void *arg)
     vTaskDelete(NULL);
 }
 
+extern void example_lvgl_demo_ui(lv_obj_t *scr);
+
 void app_main(void)
 {
-    esp_log_level_set("*", ESP_LOG_INFO);
+    esp_log_level_set("*", ESP_LOG_DEBUG);
     nvs_init();
-    wifi_init();
-    time_update();
+    // wifi_init();
+    // time_update();
     led_init();
+
+    display_init();
+    ESP_LOGI("example", "Display LVGL animation");
+    lvgl_port_lock(0);
+    lv_demo_widgets();
+    lvgl_port_unlock();
+    display_backlight_on();
 
     xTaskCreate(led_task, "LED Task", 2048, NULL, 1, NULL);
 
