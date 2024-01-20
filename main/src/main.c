@@ -46,7 +46,7 @@ extern void example_lvgl_demo_ui(lv_obj_t *scr);
 
 void app_main(void)
 {
-    esp_log_level_set("*", ESP_LOG_DEBUG);
+    esp_log_level_set("*", ESP_LOG_INFO);
     nvs_init();
     // wifi_init();
     // time_update();
@@ -65,10 +65,10 @@ void app_main(void)
 
     for (;;)
     {
-        vTaskList(pcWriteBuffer);
-        printf("-----------------------------------------\n");
-        printf("Name            State   Priority    Stack   Num\n");
-        printf("%s\n", pcWriteBuffer);
+        // vTaskList(pcWriteBuffer);
+        // printf("-----------------------------------------\n");
+        // printf("Name            State   Priority    Stack   Num\n");
+        // printf("%s\n", pcWriteBuffer);
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 

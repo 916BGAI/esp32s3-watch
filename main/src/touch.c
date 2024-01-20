@@ -72,8 +72,8 @@ esp_err_t touch_new(esp_lcd_touch_handle_t *ret_touch)
         },
         .flags = {
             .swap_xy = 0,
-            .mirror_x = 1,
-            .mirror_y = 1,
+            .mirror_x = 0,
+            .mirror_y = 0,
         },
         .interrupt_callback = touch_callback,
     };

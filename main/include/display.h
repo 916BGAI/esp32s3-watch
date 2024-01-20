@@ -20,7 +20,7 @@
 #define LCD_V_RES               (280)
 #define LCD_PIXEL_CLOCK_HZ      (80 * 1000 * 1000)
 #define LCD_SPI_NUM             (SPI2_HOST)
-#define LCD_DRAW_BUF_HEIGHT     100                 //range 10 240
+#define LCD_DRAW_BUF_HEIGHT     240                 //range 10 240
 
 /* LCD display color format */
 #define LCD_COLOR_FORMAT        (ESP_LCD_COLOR_FORMAT_RGB565)

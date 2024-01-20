@@ -101,7 +101,6 @@ static esp_err_t display_new(const int max_transfer_sz, esp_lcd_panel_handle_t *
 
     esp_lcd_panel_reset(*ret_panel);
     esp_lcd_panel_init(*ret_panel);
-    esp_lcd_panel_mirror(*ret_panel, true, true);
     esp_lcd_panel_invert_color(*ret_panel, true);
     return ret;
 
@@ -135,11 +134,10 @@ static lv_disp_t *display_lcd_init(void)
         .hres = LCD_H_RES,
         .vres = LCD_V_RES,
         .monochrome = false,
-        /* Rotation values must be same as used in esp_lcd for initial settings of the screen */
         .rotation = {
             .swap_xy = false,
-            .mirror_x = true,
-            .mirror_y = true,
+            .mirror_x = false,
+            .mirror_y = false,
         },
         .flags = {
             .buff_dma = true,
@@ -170,7 +168,6 @@ lv_disp_t *display_init(void)
     ESP_ERROR_CHECK(lvgl_port_init(&lvgl_cfg));
     ESP_ERROR_CHECK(display_brightness_init());
     disp = display_lcd_init();
-    lv_disp_set_rotation(disp, LV_DISP_ROT_180);
     disp_indev = display_indev_init(disp);
 
     return disp;
