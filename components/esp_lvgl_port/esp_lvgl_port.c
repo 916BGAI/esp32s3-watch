@@ -18,6 +18,7 @@
 
 #include "../../lvgl/lvgl.h"
 
+extern SemaphoreHandle_t touch_mux;
 
 #ifdef ESP_LVGL_PORT_TOUCH_COMPONENT
 #include "esp_lcd_touch.h"
@@ -811,7 +812,9 @@ static void lvgl_port_touchpad_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *
     uint8_t touchpad_cnt = 0;
 
     /* Read data from touch controller into memory */
-    esp_lcd_touch_read_data(touch_ctx->handle);
+    if (xSemaphoreTake(touch_mux, 0) == pdTRUE) {
+        esp_lcd_touch_read_data(touch_ctx->handle); // read only when ISR was triggled
+    }
 
     /* Read data from touch controller */
     bool touchpad_pressed = esp_lcd_touch_get_coordinates(touch_ctx->handle, touchpad_x, touchpad_y, NULL, &touchpad_cnt, 1);

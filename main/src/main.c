@@ -46,7 +46,7 @@ extern void example_lvgl_demo_ui(lv_obj_t *scr);
 
 void app_main(void)
 {
-    esp_log_level_set("*", ESP_LOG_DEBUG);
+    esp_log_level_set("*", ESP_LOG_INFO);
     nvs_init();
     // wifi_init();
     // time_update();
@@ -54,10 +54,10 @@ void app_main(void)
 
     display_init();
     ESP_LOGI("example", "Display LVGL animation");
+    display_backlight_on();
     lvgl_port_lock(0);
     lv_demo_widgets();
     lvgl_port_unlock();
-    display_backlight_on();
 
     xTaskCreate(led_task, "LED Task", 2048, NULL, 1, NULL);
 
@@ -65,10 +65,10 @@ void app_main(void)
 
     for (;;)
     {
-        vTaskList(pcWriteBuffer);
-        printf("-----------------------------------------\n");
-        printf("Name            State   Priority    Stack   Num\n");
-        printf("%s\n", pcWriteBuffer);
+        // vTaskList(pcWriteBuffer);
+        // printf("-----------------------------------------\n");
+        // printf("Name            State   Priority    Stack   Num\n");
+        // printf("%s\n", pcWriteBuffer);
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 
