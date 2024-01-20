@@ -40,7 +40,10 @@
         "display.h": "c",
         "lvgl.h": "c",
         "esp_lvgl_port.h": "c",
-        "esp_lcd_panel_ops.h": "c"
+        "esp_lcd_panel_ops.h": "c",
+        "esp_check.h": "c",
+        "esp_lcd_touch_cst816s.h": "c",
+        "esp_lcd_touch.h": "c"
     },
     "cmake.configureOnOpen": false
 }

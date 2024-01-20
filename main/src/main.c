@@ -54,10 +54,10 @@ void app_main(void)
 
     display_init();
     ESP_LOGI("example", "Display LVGL animation");
+    display_backlight_on();
     lvgl_port_lock(0);
     lv_demo_widgets();
     lvgl_port_unlock();
-    display_backlight_on();
 
     xTaskCreate(led_task, "LED Task", 2048, NULL, 1, NULL);
 

@@ -9,37 +9,14 @@
 #include "esp_lcd_panel_vendor.h"
 #include "esp_lcd_panel_ops.h"
 #include "esp_lvgl_port.h"
+#include "touch.h"
 #include "display.h"
 
 #define TAG "DISPLAY"
 
-/* Display */
-#define LCD_PCLK                (GPIO_NUM_18)
-#define LCD_DATA0               (GPIO_NUM_17)
-#define LCD_CS                  (GPIO_NUM_16)
-#define LCD_RST                 (GPIO_NUM_15)
-#define LCD_DC                  (GPIO_NUM_14)
-#define LCD_BACKLIGHT           (GPIO_NUM_13)
-#define LCD_TOUCH_INT           (GPIO_NUM_0)
-
-#define LCD_CMD_BITS            8
-#define LCD_PARAM_BITS          8
-#define LCD_LEDC_CH             1                   // range 0 7
-
-#define LCD_H_RES               (240)
-#define LCD_V_RES               (280)
-#define LCD_PIXEL_CLOCK_HZ      (80 * 1000 * 1000)
-#define LCD_SPI_NUM             (SPI2_HOST)
-#define LCD_DRAW_BUF_HEIGHT     100                 //range 10 240
-
-/* LCD display color format */
-#define LCD_COLOR_FORMAT        (ESP_LCD_COLOR_FORMAT_RGB565)
-/* LCD display color bytes endianess */
-#define LCD_BIGENDIAN           (0)
-/* LCD display color bits */
-#define LCD_BITS_PER_PIXEL      (16)
-/* LCD display color space */
-#define LCD_COLOR_SPACE         (ESP_LCD_COLOR_SPACE_RGB)
+static lv_disp_t *disp;
+static lv_indev_t *disp_indev = NULL;
+static esp_lcd_touch_handle_t tp;
 
 static esp_err_t display_brightness_init()
 {
@@ -173,13 +150,28 @@ static lv_disp_t *display_lcd_init(void)
     return lvgl_port_add_disp(&disp_cfg);
 }
 
+static lv_indev_t *display_indev_init(lv_disp_t *disp)
+{
+    ESP_ERROR_CHECK(touch_new(&tp));
+    assert(tp);
+
+    /* Add touch input (for selected screen) */
+    const lvgl_port_touch_cfg_t touch_cfg = {
+        .disp = disp,
+        .handle = tp,
+    };
+
+    return lvgl_port_add_touch(&touch_cfg);
+}
+
 lv_disp_t *display_init(void)
 {
     const lvgl_port_cfg_t lvgl_cfg = ESP_LVGL_PORT_INIT_CONFIG();
     ESP_ERROR_CHECK(lvgl_port_init(&lvgl_cfg));
     ESP_ERROR_CHECK(display_brightness_init());
-    lv_disp_t *disp = display_lcd_init();
+    disp = display_lcd_init();
     lv_disp_set_rotation(disp, LV_DISP_ROT_180);
+    disp_indev = display_indev_init(disp);
 
     return disp;
 }
