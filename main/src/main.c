@@ -61,7 +61,7 @@ void app_main(void)
 
     xTaskCreate(led_task, "LED Task", 2048, NULL, 1, NULL);
 
-    static char pcWriteBuffer[512] = {0};
+    // static char pcWriteBuffer[512] = {0};
 
     for (;;)
     {
