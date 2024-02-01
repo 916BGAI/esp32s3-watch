@@ -9,6 +9,7 @@
 #include "wifi.h"
 #include "clock.h"
 #include "display.h"
+#include "ui.h"
 
 void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 {
@@ -25,10 +26,10 @@ void app_main(void)
     // time_update();
 
     display_init();
-    ESP_LOGI("example", "Display LVGL animation");
+    ESP_LOGI("main", "Display LVGL");
     display_backlight_on();
     lvgl_port_lock(0);
-    lv_demo_widgets();
+    ui_init();
     lvgl_port_unlock();
 
     // static char pcWriteBuffer[512] = {0};
