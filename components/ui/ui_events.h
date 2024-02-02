@@ -1,14 +1,11 @@
-#ifndef _UI_EVENTS_H
-#define _UI_EVENTS_H
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void led_event_callback(lv_event_t * e);
+void led_event_callback(lv_event_t *e);
 
 #ifdef __cplusplus
 } /*extern "C"*/
-#endif
-
 #endif

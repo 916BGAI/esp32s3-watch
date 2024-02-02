@@ -27,7 +27,7 @@ static esp_err_t display_brightness_init()
         .intr_type = LEDC_INTR_DISABLE,
         .timer_sel = 1,
         .duty = 0,
-        .hpoint = 0
+        .hpoint = 0,
     };
 
     const ledc_timer_config_t LCD_backlight_timer = {
@@ -35,7 +35,7 @@ static esp_err_t display_brightness_init()
         .duty_resolution = LEDC_TIMER_10_BIT,
         .timer_num = 1,
         .freq_hz = 5000,
-        .clk_cfg = LEDC_AUTO_CLK
+        .clk_cfg = LEDC_AUTO_CLK,
     };
 
     ESP_ERROR_CHECK(ledc_timer_config(&LCD_backlight_timer));
@@ -61,12 +61,15 @@ esp_err_t display_brightness_set(int brightness_percent)
     return ESP_OK;
 }
 
-static esp_err_t display_new(const int max_transfer_sz, esp_lcd_panel_handle_t *ret_panel, esp_lcd_panel_io_handle_t *ret_io)
+static esp_err_t display_new(const int max_transfer_sz,
+                             esp_lcd_panel_handle_t *ret_panel,
+                             esp_lcd_panel_io_handle_t *ret_io)
 {
     esp_err_t ret = ESP_OK;
     assert(max_transfer_sz > 0);
 
-    ESP_RETURN_ON_ERROR(display_brightness_init(), TAG, "Brightness init failed");
+    ESP_RETURN_ON_ERROR(display_brightness_init(), TAG,
+                        "Brightness init failed");
 
     ESP_LOGD(TAG, "Initialize SPI bus");
     const spi_bus_config_t buscfg = {
@@ -77,7 +80,8 @@ static esp_err_t display_new(const int max_transfer_sz, esp_lcd_panel_handle_t *
         .quadhd_io_num = GPIO_NUM_NC,
         .max_transfer_sz = max_transfer_sz,
     };
-    ESP_RETURN_ON_ERROR(spi_bus_initialize(LCD_SPI_NUM, &buscfg, SPI_DMA_CH_AUTO), TAG, "SPI init failed");
+    ESP_RETURN_ON_ERROR(spi_bus_initialize(LCD_SPI_NUM, &buscfg, SPI_DMA_CH_AUTO),
+                        TAG, "SPI init failed");
 
     ESP_LOGD(TAG, "Install panel IO");
     const esp_lcd_panel_io_spi_config_t io_config = {
@@ -89,7 +93,9 @@ static esp_err_t display_new(const int max_transfer_sz, esp_lcd_panel_handle_t *
         .spi_mode = 0,
         .trans_queue_depth = 10,
     };
-    ESP_GOTO_ON_ERROR(esp_lcd_new_panel_io_spi((esp_lcd_spi_bus_handle_t)LCD_SPI_NUM, &io_config, ret_io), err, TAG, "New panel IO failed");
+    ESP_GOTO_ON_ERROR(
+        esp_lcd_new_panel_io_spi((esp_lcd_spi_bus_handle_t)LCD_SPI_NUM, &io_config, ret_io),
+        err, TAG, "New panel IO failed");
 
     ESP_LOGD(TAG, "Install LCD driver");
     const esp_lcd_panel_dev_config_t panel_config = {
@@ -97,7 +103,8 @@ static esp_err_t display_new(const int max_transfer_sz, esp_lcd_panel_handle_t *
         .rgb_ele_order = ESP_LCD_COLOR_SPACE_RGB,
         .bits_per_pixel = LCD_BITS_PER_PIXEL,
     };
-    ESP_GOTO_ON_ERROR(esp_lcd_new_panel_st7789(*ret_io, &panel_config, ret_panel), err, TAG, "New panel failed");
+    ESP_GOTO_ON_ERROR(esp_lcd_new_panel_st7789(*ret_io, &panel_config, ret_panel),
+                      err, TAG, "New panel failed");
 
     esp_lcd_panel_reset(*ret_panel);
     esp_lcd_panel_init(*ret_panel);

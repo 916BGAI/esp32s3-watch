@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "lvgl.h"
 #include "lv_demos.h"
 #include "esp_lvgl_port.h"
@@ -37,3 +41,7 @@ static inline esp_err_t display_backlight_on(void)
 {
     return display_brightness_set(100);
 }
+
+#ifdef __cplusplus
+} /*extern "C"*/
+#endif

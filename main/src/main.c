@@ -34,13 +34,11 @@ void app_main(void)
 
     // static char pcWriteBuffer[512] = {0};
 
-    for (;;)
-    {
+    for (;;) {
         // vTaskList(pcWriteBuffer);
         // printf("-----------------------------------------\n");
         // printf("Name            State   Priority    Stack   Num\n");
         // printf("%s\n", pcWriteBuffer);
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
-
 }
