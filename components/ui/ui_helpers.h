@@ -8,7 +8,7 @@ extern "C" {
 
 typedef struct _application_info_t {
     char *name;
-    char *img_src;
+    const lv_img_dsc_t *img_src;
     lv_obj_t *(*entry_point)(void *user_date);
     void (*release_resource_cb)(lv_event_t *event);
 } application_info_t;

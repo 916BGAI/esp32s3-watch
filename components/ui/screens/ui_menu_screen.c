@@ -1,5 +1,6 @@
 #include "../ui.h"
 
+lv_obj_t *ui_menu_screen;
 static lv_obj_t *container;
 static lv_obj_t *running_application;
 
@@ -50,14 +51,14 @@ void ui_menu_screen_init(void)
     static application_info_t app1 = {
         .name = "APP OPTIONS",
         .img_src = &ui_img_options_png,
-        .entry_point = app_about,
+        .entry_point = (lv_obj_t * (*)(void *))ui_options_screen_init,
         .release_resource_cb = NULL,
     };
     application_reg(&app1);
 
     static application_info_t app2 = {
         .name = "FILE_MANAGER",
-        .entry_point = app_about,
+        .entry_point = (lv_obj_t * (*)(void *))ui_options_screen_init,
         .img_src = &ui_img_more_png,
         .release_resource_cb = NULL,
     };
@@ -66,7 +67,7 @@ void ui_menu_screen_init(void)
     static application_info_t app3 = {
         .name = "APP_ABOUT",
         .img_src = &ui_img_weather_png,
-        .entry_point = app_about,
+        .entry_point = (lv_obj_t * (*)(void *))ui_options_screen_init,
         .release_resource_cb = NULL,
     };
     application_reg(&app3);
@@ -74,7 +75,7 @@ void ui_menu_screen_init(void)
     static application_info_t app4 = {
         .name = "APP_ABOUT",
         .img_src = &ui_img_clock_png,
-        .entry_point = app_about,
+        .entry_point = (lv_obj_t * (*)(void *))ui_options_screen_init,
         .release_resource_cb = NULL,
     };
     application_reg(&app4);
@@ -135,7 +136,7 @@ static void application_button_event_cb(lv_event_t *event)
         /*获取正准备打开APP的信息*/
         application_info_t *application_info = lv_event_get_user_data(event);
         lv_obj_t *(*app_entry_point)(lv_obj_t *parent) =
-            application_info->entry_point;
+            (lv_obj_t * (*)(lv_obj_t *))application_info->entry_point;
 
         /*创建一个基本对象，用于承载APP的控件*/
         lv_obj_t *base_obj = lv_obj_create(lv_scr_act());
