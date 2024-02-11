@@ -1,9 +1,9 @@
 #include "../ui.h"
 #include "ui_helpers.h"
+#include "ui_menu_screen.h"
 
 lv_obj_t *ui_menu_screen;
 static lv_obj_t *container;
-static lv_obj_t *running_application;
 
 static void application_button_event_cb(lv_event_t *event);
 static void ui_event_menu_screen(lv_event_t *e);
@@ -54,7 +54,6 @@ void ui_menu_screen_init(void)
         .name = "APP OPTIONS",
         .img_src = &ui_img_options_png,
         .entry_point = (lv_obj_t * (*)(void *))ui_options_screen_init,
-        .release_resource_cb = NULL,
     };
     application_reg(&app1);
 
@@ -62,7 +61,6 @@ void ui_menu_screen_init(void)
         .name = "FILE_MANAGER",
         .entry_point = (lv_obj_t * (*)(void *))ui_options_screen_init,
         .img_src = &ui_img_more_png,
-        .release_resource_cb = NULL,
     };
     application_reg(&app2);
 
@@ -70,7 +68,6 @@ void ui_menu_screen_init(void)
         .name = "APP_ABOUT",
         .img_src = &ui_img_weather_png,
         .entry_point = (lv_obj_t * (*)(void *))ui_options_screen_init,
-        .release_resource_cb = NULL,
     };
     application_reg(&app3);
 
@@ -78,7 +75,6 @@ void ui_menu_screen_init(void)
         .name = "APP_ABOUT",
         .img_src = &ui_img_clock_png,
         .entry_point = (lv_obj_t * (*)(void *))ui_options_screen_init,
-        .release_resource_cb = NULL,
     };
     application_reg(&app4);
 
@@ -140,20 +136,8 @@ static void application_button_event_cb(lv_event_t *event)
         lv_obj_t *(*app_entry_point)(lv_obj_t *parent) =
             (lv_obj_t * (*)(lv_obj_t *))application_info->entry_point;
 
-        /*创建一个基本对象，用于承载APP的控件*/
-        lv_obj_t *base_obj = lv_obj_create(lv_scr_act());
-        lv_obj_set_size(base_obj, LV_PCT(100), LV_PCT(100));
-        lv_obj_set_scrollbar_mode(base_obj, LV_SCROLLBAR_MODE_OFF);
-        lv_obj_set_style_pad_all(base_obj, 0, LV_PART_MAIN);
-        lv_obj_set_style_pad_top(base_obj, 30, LV_PART_MAIN);
-        lv_obj_set_style_pad_row(base_obj, 0, LV_PART_MAIN);
-
         /*打开APP并将基本对象赋值给当前正在运行的程序，返回按钮触发时将删除该对象*/
-        running_application = app_entry_point(base_obj);
-        /*添加一个删除事件到基本对象，当APP退出时调用该回调函数释放定时器、数据结构等资源*/
-        lv_obj_add_event_cb(base_obj, application_info->release_resource_cb,
-                            LV_EVENT_DELETE, NULL);
-        running_application = base_obj;
+        app_entry_point(NULL);
     }
 }
 

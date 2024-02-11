@@ -1,61 +1,81 @@
 #include "../ui.h"
 #include "ui_brightness_app.h"
+#include "ui_options_screen.h"
 
-lv_obj_t *ui_options_screen;
-lv_obj_t * options_list;
-lv_obj_t *options_top_contanier;
-lv_obj_t *options_top_label;
-lv_obj_t *options_return_button;
-lv_obj_t *options_save_button;
-lv_style_t options_style;
+static void ui_event_options_screen(lv_event_t *e);
 
 void ui_options_screen_init(void)
 {
-    ui_options_screen = lv_obj_create(NULL);
+    options_screen_t *options_screen = (options_screen_t *)malloc(sizeof(options_screen_t));
+    options_screen->mutex = false;
 
-    options_top_contanier = lv_obj_create(ui_options_screen);
-    lv_obj_clear_flag(options_top_contanier, LV_OBJ_FLAG_SCROLLABLE);
-    lv_obj_set_size(options_top_contanier, 240, 30);
-    lv_obj_align(options_top_contanier, LV_ALIGN_TOP_LEFT, 0, 0);
-    lv_obj_set_style_bg_color(options_top_contanier, lv_color_hex(0xEFF0F1), 0);
+    options_screen->screen = lv_obj_create(NULL);
 
-    options_top_label = lv_label_create(options_top_contanier);
-    lv_obj_set_style_text_font(options_top_label, &ui_font_sarasa18,
+    options_screen->top_contanier = lv_obj_create(options_screen->screen);
+    lv_obj_clear_flag(options_screen->top_contanier, LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_set_size(options_screen->top_contanier, 240, 30);
+    lv_obj_align(options_screen->top_contanier, LV_ALIGN_TOP_LEFT, 0, 0);
+    lv_obj_set_style_bg_color(options_screen->top_contanier, lv_color_hex(0xEFF0F1), 0);
+
+    options_screen->top_label = lv_label_create(options_screen->top_contanier);
+    lv_obj_set_style_text_font(options_screen->top_label, &ui_font_sarasa18,
                                LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_label_set_text(options_top_label, "设 置");
-    lv_obj_align(options_top_label, LV_ALIGN_CENTER, 0, 0);
+    lv_label_set_text(options_screen->top_label, "设 置");
+    lv_obj_align(options_screen->top_label, LV_ALIGN_CENTER, 0, 0);
 
-    options_return_button = lv_btn_create(options_top_contanier);
-    lv_obj_t *return_button_label = lv_label_create(options_return_button);
-    lv_obj_set_size(options_return_button, 35, 20);
-    lv_obj_align(options_return_button, LV_ALIGN_LEFT_MID, -5, 0);
+    options_screen->return_button = lv_btn_create(options_screen->top_contanier);
+    lv_obj_t *return_button_label = lv_label_create(options_screen->return_button);
+    lv_obj_set_size(options_screen->return_button, 35, 20);
+    lv_obj_align(options_screen->return_button, LV_ALIGN_LEFT_MID, -5, 0);
     lv_label_set_text(return_button_label, "return");
     lv_obj_center(return_button_label);
-    lv_obj_add_event_cb(options_return_button, return_save_button_event_callback, LV_EVENT_CLICKED, NULL);
-    lv_obj_add_flag(options_return_button, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_event_cb(options_screen->return_button,
+                        return_save_button_event_callback, LV_EVENT_CLICKED,
+                        (void *)options_screen);
+    lv_obj_add_flag(options_screen->return_button, LV_OBJ_FLAG_HIDDEN);
 
-    options_save_button = lv_btn_create(options_top_contanier);
-    lv_obj_t *save_button_label = lv_label_create(options_save_button);
-    lv_obj_set_size(options_save_button, 35, 20);
-    lv_obj_align(options_save_button, LV_ALIGN_RIGHT_MID, 5, 0);
+    options_screen->save_button = lv_btn_create(options_screen->top_contanier);
+    lv_obj_t *save_button_label = lv_label_create(options_screen->save_button);
+    lv_obj_set_size(options_screen->save_button, 35, 20);
+    lv_obj_align(options_screen->save_button, LV_ALIGN_RIGHT_MID, 5, 0);
     lv_label_set_text(save_button_label, "save");
     lv_obj_center(save_button_label);
-    lv_obj_add_event_cb(options_save_button, return_save_button_event_callback, LV_EVENT_CLICKED, NULL);
-    lv_obj_add_flag(options_save_button, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_event_cb(options_screen->save_button,
+                        return_save_button_event_callback, LV_EVENT_CLICKED,
+                        (void *)options_screen);
+    lv_obj_add_flag(options_screen->save_button, LV_OBJ_FLAG_HIDDEN);
 
-    options_list = lv_list_create(ui_options_screen);
-    lv_obj_set_style_text_font(options_list, &ui_font_sarasa16,
+    options_screen->list = lv_list_create(options_screen->screen);
+    lv_obj_set_style_text_font(options_screen->list, &ui_font_sarasa16,
                                LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_size(options_list, 240, 250);
-    lv_obj_align(options_list, LV_ALIGN_TOP_MID, 0, 30);
+    lv_obj_set_size(options_screen->list, 240, 250);
+    lv_obj_align(options_screen->list, LV_ALIGN_TOP_MID, 0, 30);
 
     lv_obj_t * btn;
-    btn = lv_list_add_btn(options_list, NULL, "屏幕亮度");
-    lv_obj_add_event_cb(btn, brightness_event_callback, LV_EVENT_CLICKED, NULL);
+    btn = lv_list_add_btn(options_screen->list, NULL, "屏幕亮度");
+    lv_obj_add_event_cb(btn, brightness_event_callback, LV_EVENT_CLICKED,
+                        (void *)options_screen);
 
-    lv_style_init(&options_style);
-    lv_style_set_border_width(&options_style,0);
-    lv_obj_add_style(options_list, &options_style, 0);
+    lv_style_init(&options_screen->style);
+    lv_style_set_border_width(&options_screen->style,0);
+    lv_obj_add_style(options_screen->list, &options_screen->style, 0);
 
-    lv_disp_load_scr(ui_options_screen);
+    lv_obj_add_event_cb(options_screen->screen, ui_event_options_screen, LV_EVENT_ALL,
+                        (void *)options_screen);
+    lv_disp_load_scr(options_screen->screen);
+}
+
+static void ui_event_options_screen(lv_event_t *e)
+{
+    options_screen_t *options_screen = (options_screen_t *)e->user_data;
+
+    const lv_event_code_t event_code = lv_event_get_code(e);
+    if (event_code == LV_EVENT_GESTURE &&
+        lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_RIGHT && options_screen->mutex == false) {
+        lv_indev_wait_release(lv_indev_get_act());
+        lv_scr_load_anim(ui_menu_screen, LV_SCR_LOAD_ANIM_FADE_ON, 300, 0,
+                         true);
+    } else if (event_code == LV_EVENT_SCREEN_UNLOADED) {
+        free(options_screen);
+    }
 }

@@ -32,15 +32,6 @@ static brightness_config_t brightness_config = {
     .percent = 0
 };
 
-static void display_brightness_update_task(void *arg)
-{
-    for (;;) {
-        ESP_LOGI("brightness", "brightness_percent : %lu\n",
-                     brightness_config.percent);
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
-    }
-}
-
 static esp_err_t display_brightness_init()
 {
     const ledc_channel_config_t LCD_backlight_channel = {
@@ -73,9 +64,6 @@ static esp_err_t display_brightness_init()
         ESP_ERROR_CHECK(ledc_set_duty(LEDC_LOW_SPEED_MODE, LCD_LEDC_CH, duty_cycle));
         ESP_ERROR_CHECK(ledc_update_duty(LEDC_LOW_SPEED_MODE, LCD_LEDC_CH));
     }
-
-    xTaskCreate(display_brightness_update_task, "brightness update task", 2048, NULL, 1, NULL);
-
     return ESP_OK;
 }
 
