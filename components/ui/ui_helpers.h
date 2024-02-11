@@ -120,6 +120,8 @@ void _ui_checked_set_text_value(lv_obj_t *trg, lv_obj_t *src,
 
 void _ui_spinbox_step(lv_obj_t *target, int val);
 
+void lv_obj_load_anim(lv_obj_t * new_target, lv_obj_t * old_target, lv_scr_load_anim_t anim_type, uint32_t time, uint32_t delay);
+
 #ifdef __cplusplus
 } /*extern "C"*/
 #endif

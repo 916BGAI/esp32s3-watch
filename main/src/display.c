@@ -9,14 +9,37 @@
 #include "esp_lcd_panel_vendor.h"
 #include "esp_lcd_panel_ops.h"
 #include "esp_lvgl_port.h"
+#include "nvs_flash.h"
 #include "touch.h"
 #include "display.h"
 
 #define TAG "DISPLAY"
 
+typedef struct _brightness_config_t {
+    const char *namespace;
+    nvs_handle_t handle;
+    const char *key;
+    uint32_t percent;
+} brightness_config_t;
+
 static lv_disp_t *disp;
-static lv_indev_t *disp_indev = NULL;
+static lv_indev_t *disp_indev;
 static esp_lcd_touch_handle_t tp;
+static brightness_config_t brightness_config = {
+    .namespace = "brightness",
+    .handle = 0,
+    .key = "brightness",
+    .percent = 0
+};
+
+static void display_brightness_update_task(void *arg)
+{
+    for (;;) {
+        ESP_LOGI("brightness", "brightness_percent : %lu\n",
+                     brightness_config.percent);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+    }
+}
 
 static esp_err_t display_brightness_init()
 {
@@ -41,24 +64,51 @@ static esp_err_t display_brightness_init()
     ESP_ERROR_CHECK(ledc_timer_config(&LCD_backlight_timer));
     ESP_ERROR_CHECK(ledc_channel_config(&LCD_backlight_channel));
 
+    uint32_t err = display_brightness_get();
+    if(err == ESP_FAIL) {
+        display_backlight_on();
+    } else {
+        ESP_LOGI(TAG, "Setting LCD backlight: %lu%%", brightness_config.percent);
+        uint32_t duty_cycle = (1023 * brightness_config.percent) / 100; // LEDC resolution set to 10bits, thus: 100% = 1023
+        ESP_ERROR_CHECK(ledc_set_duty(LEDC_LOW_SPEED_MODE, LCD_LEDC_CH, duty_cycle));
+        ESP_ERROR_CHECK(ledc_update_duty(LEDC_LOW_SPEED_MODE, LCD_LEDC_CH));
+    }
+
+    xTaskCreate(display_brightness_update_task, "brightness update task", 2048, NULL, 1, NULL);
+
     return ESP_OK;
 }
 
-esp_err_t display_brightness_set(int brightness_percent)
+esp_err_t display_brightness_set(uint32_t brightness_percent)
 {
+    brightness_config.percent = brightness_percent;
     if (brightness_percent > 100) {
         brightness_percent = 100;
     }
-    if (brightness_percent < 0) {
-        brightness_percent = 0;
-    }
 
-    ESP_LOGI(TAG, "Setting LCD backlight: %d%%", brightness_percent);
+    ESP_LOGI(TAG, "Setting LCD backlight: %lu%%", brightness_percent);
     uint32_t duty_cycle = (1023 * brightness_percent) / 100; // LEDC resolution set to 10bits, thus: 100% = 1023
     ESP_ERROR_CHECK(ledc_set_duty(LEDC_LOW_SPEED_MODE, LCD_LEDC_CH, duty_cycle));
     ESP_ERROR_CHECK(ledc_update_duty(LEDC_LOW_SPEED_MODE, LCD_LEDC_CH));
 
+    nvs_open(brightness_config.namespace, NVS_READWRITE, &brightness_config.handle);
+    nvs_set_u32(brightness_config.handle, brightness_config.key, brightness_percent);
+    nvs_commit(brightness_config.handle);
+    nvs_close(brightness_config.handle);
+
     return ESP_OK;
+}
+
+uint32_t display_brightness_get(void)
+{
+    nvs_open(brightness_config.namespace, NVS_READWRITE, &brightness_config.handle);
+    esp_err_t err = nvs_get_u32(brightness_config.handle, brightness_config.key, &brightness_config.percent);
+    nvs_close(brightness_config.handle);
+    if(err == ESP_ERR_NVS_NOT_FOUND) {
+        return ESP_FAIL;
+    } else {
+        return brightness_config.percent;
+    }
 }
 
 static esp_err_t display_new(const int max_transfer_sz,
@@ -126,7 +176,7 @@ static lv_disp_t *display_lcd_init(void)
 {
     esp_lcd_panel_io_handle_t io_handle = NULL;
     esp_lcd_panel_handle_t panel_handle = NULL;
-    int max_transfer_sz = (LCD_H_RES * LCD_DRAW_BUF_HEIGHT) * sizeof(uint16_t);
+    const int max_transfer_sz = (LCD_H_RES * LCD_DRAW_BUF_HEIGHT) * sizeof(uint16_t);
     ESP_ERROR_CHECK(display_new(max_transfer_sz, &panel_handle, &io_handle));
 
     esp_lcd_panel_disp_on_off(panel_handle, true);

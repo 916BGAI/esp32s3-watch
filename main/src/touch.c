@@ -2,7 +2,6 @@
 #include "driver/i2c.h"
 #include "esp_err.h"
 #include "esp_log.h"
-#include "esp_check.h"
 #include "esp_lcd_touch.h"
 #include "esp_lcd_touch_cst816s.h"
 #include "esp_lvgl_port.h"

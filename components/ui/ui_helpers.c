@@ -274,3 +274,115 @@ void _ui_spinbox_step(lv_obj_t *target, int val)
 
     lv_event_send(target, LV_EVENT_VALUE_CHANGED, 0);
 }
+
+static void set_x_anim(void * obj, int32_t v)
+{
+    lv_obj_set_x(obj, v);
+}
+
+static void set_y_anim(void * obj, int32_t v)
+{
+    lv_obj_set_y(obj, v);
+}
+
+static void opa_scale_anim(void * obj, int32_t v)
+{
+    lv_obj_set_style_opa(obj, v, 0);
+}
+
+void lv_obj_load_anim(lv_obj_t * new_target, lv_obj_t * old_target, lv_scr_load_anim_t anim_type, uint32_t time, uint32_t delay)
+{
+    lv_disp_t * d = lv_obj_get_disp(new_target);
+
+    lv_anim_t a_new;
+    lv_anim_init(&a_new);
+    lv_anim_set_var(&a_new, new_target);
+    lv_anim_set_time(&a_new, time);
+    lv_anim_set_delay(&a_new, delay);
+
+    lv_anim_t a_old;
+    lv_anim_init(&a_old);
+    lv_anim_set_var(&a_old, old_target);
+    lv_anim_set_time(&a_old, time);
+    lv_anim_set_delay(&a_old, delay);
+
+    switch(anim_type) {
+        case LV_SCR_LOAD_ANIM_NONE:
+            /*Create a dummy animation to apply the delay*/
+            lv_anim_set_exec_cb(&a_new, set_x_anim);
+            lv_anim_set_values(&a_new, 0, 0);
+            break;
+        case LV_SCR_LOAD_ANIM_OVER_LEFT:
+            lv_anim_set_exec_cb(&a_new, set_x_anim);
+            lv_anim_set_values(&a_new, lv_disp_get_hor_res(d), 0);
+            break;
+        case LV_SCR_LOAD_ANIM_OVER_RIGHT:
+            lv_anim_set_exec_cb(&a_new, set_x_anim);
+            lv_anim_set_values(&a_new, -lv_disp_get_hor_res(d), 0);
+            break;
+        case LV_SCR_LOAD_ANIM_OVER_TOP:
+            lv_anim_set_exec_cb(&a_new, set_y_anim);
+            lv_anim_set_values(&a_new, lv_disp_get_ver_res(d), 0);
+            break;
+        case LV_SCR_LOAD_ANIM_OVER_BOTTOM:
+            lv_anim_set_exec_cb(&a_new, set_y_anim);
+            lv_anim_set_values(&a_new, -lv_disp_get_ver_res(d), 0);
+            break;
+        case LV_SCR_LOAD_ANIM_MOVE_LEFT:
+            lv_anim_set_exec_cb(&a_new, set_x_anim);
+            lv_anim_set_values(&a_new, lv_disp_get_hor_res(d), 0);
+
+            lv_anim_set_exec_cb(&a_old, set_x_anim);
+            lv_anim_set_values(&a_old, 0, -lv_disp_get_hor_res(d));
+            break;
+        case LV_SCR_LOAD_ANIM_MOVE_RIGHT:
+            lv_anim_set_exec_cb(&a_new, set_x_anim);
+            lv_anim_set_values(&a_new, -lv_disp_get_hor_res(d), 0);
+
+            lv_anim_set_exec_cb(&a_old, set_x_anim);
+            lv_anim_set_values(&a_old, 0, lv_disp_get_hor_res(d));
+            break;
+        case LV_SCR_LOAD_ANIM_MOVE_TOP:
+            lv_anim_set_exec_cb(&a_new, set_y_anim);
+            lv_anim_set_values(&a_new, lv_disp_get_ver_res(d), 0);
+
+            lv_anim_set_exec_cb(&a_old, set_y_anim);
+            lv_anim_set_values(&a_old, 0, -lv_disp_get_ver_res(d));
+            break;
+        case LV_SCR_LOAD_ANIM_MOVE_BOTTOM:
+            lv_anim_set_exec_cb(&a_new, set_y_anim);
+            lv_anim_set_values(&a_new, -lv_disp_get_ver_res(d), 0);
+
+            lv_anim_set_exec_cb(&a_old, set_y_anim);
+            lv_anim_set_values(&a_old, 0, lv_disp_get_ver_res(d));
+            break;
+        case LV_SCR_LOAD_ANIM_FADE_IN:
+            lv_anim_set_exec_cb(&a_new, opa_scale_anim);
+            lv_anim_set_values(&a_new, LV_OPA_TRANSP, LV_OPA_COVER);
+            break;
+        case LV_SCR_LOAD_ANIM_FADE_OUT:
+            lv_anim_set_exec_cb(&a_old, opa_scale_anim);
+            lv_anim_set_values(&a_old, LV_OPA_COVER, LV_OPA_TRANSP);
+            break;
+        case LV_SCR_LOAD_ANIM_OUT_LEFT:
+            lv_anim_set_exec_cb(&a_old, set_x_anim);
+            lv_anim_set_values(&a_old, 0, -lv_disp_get_hor_res(d));
+            break;
+        case LV_SCR_LOAD_ANIM_OUT_RIGHT:
+            lv_anim_set_exec_cb(&a_old, set_x_anim);
+            lv_anim_set_values(&a_old, 0, lv_disp_get_hor_res(d));
+            break;
+        case LV_SCR_LOAD_ANIM_OUT_TOP:
+            lv_anim_set_exec_cb(&a_old, set_y_anim);
+            lv_anim_set_values(&a_old, 0, -lv_disp_get_ver_res(d));
+            break;
+        case LV_SCR_LOAD_ANIM_OUT_BOTTOM:
+            lv_anim_set_exec_cb(&a_old, set_y_anim);
+            lv_anim_set_values(&a_old, 0, lv_disp_get_ver_res(d));
+            break;
+    }
+
+    if(old_target) lv_event_send(old_target, LV_EVENT_SCREEN_UNLOAD_START, NULL);
+    lv_anim_start(&a_new);
+    if(old_target) lv_anim_start(&a_old);
+}

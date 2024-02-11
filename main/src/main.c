@@ -4,6 +4,7 @@
 #include "freertos/task.h"
 #include "sdkconfig.h"
 #include "esp_log.h"
+#include "esp_lvgl_port.h"
 #include "main.h"
 #include "display.h"
 #include "ui.h"
@@ -22,7 +23,6 @@ void app_main(void)
 
     display_init();
     ESP_LOGI("main", "Display LVGL");
-    display_backlight_on();
     lvgl_port_lock(0);
     ui_init();
     lvgl_port_unlock();

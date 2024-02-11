@@ -1,10 +1,12 @@
 #include "../ui.h"
+#include "ui_helpers.h"
 
 lv_obj_t *ui_menu_screen;
 static lv_obj_t *container;
 static lv_obj_t *running_application;
 
 static void application_button_event_cb(lv_event_t *event);
+static void ui_event_menu_screen(lv_event_t *e);
 
 static void application_reg(application_info_t *application_info)
 {
@@ -152,5 +154,15 @@ static void application_button_event_cb(lv_event_t *event)
         lv_obj_add_event_cb(base_obj, application_info->release_resource_cb,
                             LV_EVENT_DELETE, NULL);
         running_application = base_obj;
+    }
+}
+
+static void ui_event_menu_screen(lv_event_t *e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+    if (event_code == LV_EVENT_GESTURE && lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_TOP) {
+        lv_indev_wait_release(lv_indev_get_act());
+        _ui_screen_change(&ui_main_screen, LV_SCR_LOAD_ANIM_FADE_ON, 300, 0,
+                          &ui_main_screen_init);
     }
 }

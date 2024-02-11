@@ -4,7 +4,6 @@
 extern "C" {
 #endif
 
-#include "esp_log.h"
 #include "nvs_flash.h"
 
 static inline void nvs_init(void)

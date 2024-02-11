@@ -5,8 +5,6 @@ extern "C" {
 #endif
 
 #include "lvgl.h"
-#include "lv_demos.h"
-#include "esp_lvgl_port.h"
 
 /* Display */
 #define LCD_PCLK                (GPIO_NUM_18)
@@ -29,7 +27,8 @@ extern "C" {
 /* LCD display color bits */
 #define LCD_BITS_PER_PIXEL      (16)
 
-esp_err_t display_brightness_set(int brightness_percent);
+esp_err_t display_brightness_set(uint32_t brightness_percent);
+uint32_t display_brightness_get(void);
 lv_disp_t *display_init(void);
 
 static inline esp_err_t display_backlight_off(void)
