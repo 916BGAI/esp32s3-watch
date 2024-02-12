@@ -52,7 +52,7 @@ void ui_menu_screen_init(void)
 
     static application_info_t app1 = {
         .name = "APP OPTIONS",
-        .img_src = &ui_img_options_png,
+        .img_src = &ui_img_options,
         .entry_point = (lv_obj_t * (*)(void *))ui_options_screen_init,
     };
     application_reg(&app1);
@@ -60,20 +60,20 @@ void ui_menu_screen_init(void)
     static application_info_t app2 = {
         .name = "FILE_MANAGER",
         .entry_point = (lv_obj_t * (*)(void *))ui_options_screen_init,
-        .img_src = &ui_img_more_png,
+        .img_src = &ui_img_more,
     };
     application_reg(&app2);
 
     static application_info_t app3 = {
         .name = "APP_ABOUT",
-        .img_src = &ui_img_weather_png,
+        .img_src = &ui_img_weather,
         .entry_point = (lv_obj_t * (*)(void *))ui_options_screen_init,
     };
     application_reg(&app3);
 
     static application_info_t app4 = {
         .name = "APP_ABOUT",
-        .img_src = &ui_img_clock_png,
+        .img_src = &ui_img_clock,
         .entry_point = (lv_obj_t * (*)(void *))ui_options_screen_init,
     };
     application_reg(&app4);

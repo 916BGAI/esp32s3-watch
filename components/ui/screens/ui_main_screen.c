@@ -8,7 +8,6 @@ static lv_obj_t *ui_label1;
 
 static void ui_event_main_screen(lv_event_t *e);
 static void ui_event_button1(lv_event_t *e);
-static void led_event_callback(lv_event_t *e);
 
 void ui_main_screen_init(void)
 {
@@ -18,7 +17,7 @@ void ui_main_screen_init(void)
                                LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_image1 = lv_img_create(ui_main_screen);
-    lv_img_set_src(ui_image1, &ui_img_image_png);
+    lv_img_set_src(ui_image1, &ui_img_image);
     lv_obj_set_width(ui_image1, LV_SIZE_CONTENT);
     lv_obj_set_height(ui_image1, LV_SIZE_CONTENT);
     lv_obj_set_align(ui_image1, LV_ALIGN_CENTER);
@@ -63,11 +62,6 @@ static void ui_event_button1(lv_event_t *e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
     if (event_code == LV_EVENT_CLICKED) {
-        led_event_callback(e);
-    }
-}
 
-static void led_event_callback(lv_event_t *e)
-{
-    // Your code here
+    }
 }
