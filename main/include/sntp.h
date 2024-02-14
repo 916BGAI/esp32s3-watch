@@ -4,7 +4,8 @@
 extern "C" {
 #endif
 
-void obtain_time(void);
+void time_obtain(void);
+void time_update(void);
 
 #ifdef __cplusplus
 } /*extern "C"*/

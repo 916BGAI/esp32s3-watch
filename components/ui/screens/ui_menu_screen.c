@@ -126,7 +126,7 @@ static void ui_event_menu_screen(lv_event_t *e)
     const lv_event_code_t event_code = lv_event_get_code(e);
     if (event_code == LV_EVENT_GESTURE && lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_TOP) {
         lv_indev_wait_release(lv_indev_get_act());
-        _ui_screen_change(&ui_clock_screen, LV_SCR_LOAD_ANIM_FADE_ON, 300, 0,
+        _ui_screen_change(&clock_screen.screen, LV_SCR_LOAD_ANIM_FADE_ON, 300, 0,
                           &ui_clock_screen_init);
     }
 }

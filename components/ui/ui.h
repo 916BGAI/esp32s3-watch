@@ -5,8 +5,9 @@ extern "C" {
 #endif
 
 #include "lvgl/lvgl.h"
+#include "ui_clock_screen.h"
 
-extern lv_obj_t *ui_clock_screen;
+extern clock_screen_t clock_screen;;
 void ui_clock_screen_init(void);
 
 extern lv_obj_t *ui_menu_screen;

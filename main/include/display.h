@@ -22,7 +22,7 @@ extern "C" {
 #define LCD_V_RES               (280)
 #define LCD_PIXEL_CLOCK_HZ      (80 * 1000 * 1000)
 #define LCD_SPI_NUM             (SPI2_HOST)
-#define LCD_DRAW_BUF_HEIGHT     240                 //range 10 240
+#define LCD_DRAW_BUF_HEIGHT     280
 
 /* LCD display color bits */
 #define LCD_BITS_PER_PIXEL      (16)
