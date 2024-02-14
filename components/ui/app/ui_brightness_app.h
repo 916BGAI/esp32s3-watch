@@ -6,7 +6,7 @@ extern "C" {
 
 #include "lvgl/lvgl.h"
 
-typedef struct _brightness_app_t {
+typedef struct {
     lv_obj_t *contanier;
     lv_obj_t *slider;
     lv_obj_t *slider_label;

@@ -6,7 +6,7 @@ extern "C" {
 
 #include "lvgl.h"
 
-typedef struct _application_info_t {
+typedef struct {
     char *name;
     const lv_img_dsc_t *img_src;
     lv_obj_t *(*entry_point)(void *user_date);

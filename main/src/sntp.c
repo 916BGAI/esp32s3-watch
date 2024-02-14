@@ -18,7 +18,7 @@ static void print_servers(void)
 {
     ESP_LOGI(TAG, "List of configured NTP servers:");
 
-    for (uint8_t i = 0; i < SNTP_MAX_SERVERS; ++i){
+    for (uint8_t i = 0; i < SNTP_MAX_SERVERS; ++i) {
         ESP_LOGI(TAG, "server %d: %s", i, esp_sntp_getservername(i));
     }
 }
