@@ -11,8 +11,8 @@ typedef struct {
     lv_obj_t *tv;
 
     struct _timer {
+        lv_timer_t *time;
         lv_timer_t *calibrate;
-        lv_timer_t *clock;
     } timer;
 
     struct _tile {
@@ -26,7 +26,7 @@ typedef struct {
     } label;
 
     lv_obj_t *clock_contanier;
-    lv_style_t style;
+    lv_obj_t * meter;
     bool lock;
 } clock_screen_t;
 

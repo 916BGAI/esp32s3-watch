@@ -30,8 +30,8 @@ void app_main(void)
     ui_init();
     lvgl_port_unlock();
 
-    wifi_init();
-    time_obtain();
+    // wifi_init();
+    // time_update();
 
     for (;;) {
         vTaskDelay(1000 / portTICK_PERIOD_MS);

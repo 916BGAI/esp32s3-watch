@@ -90,7 +90,7 @@ esp_err_t display_brightness_set(uint32_t brightness_percent)
 
 uint32_t display_brightness_get(void)
 {
-    nvs_open(brightness_config.namespace, NVS_READWRITE, &brightness_config.handle);
+    nvs_open(brightness_config.namespace, NVS_READONLY, &brightness_config.handle);
     esp_err_t err = nvs_get_u32(brightness_config.handle, brightness_config.key, &brightness_config.percent);
     nvs_close(brightness_config.handle);
     if (err == ESP_ERR_NVS_NOT_FOUND) {

@@ -20,6 +20,7 @@ LV_IMG_DECLARE(ui_img_options);
 LV_IMG_DECLARE(ui_img_more);
 LV_IMG_DECLARE(ui_img_weather);
 LV_IMG_DECLARE(ui_img_clock);
+LV_IMG_DECLARE(img_hand);
 
 LV_FONT_DECLARE(ui_font_sarasa16);
 LV_FONT_DECLARE(ui_font_sarasa18);
