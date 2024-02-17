@@ -1,7 +1,5 @@
 #include "ui.h"
 
-static lv_obj_t *ui____initial_actions0;
-
 void ui_init(void)
 {
     lv_disp_t *dispp = lv_disp_get_default();
@@ -11,7 +9,4 @@ void ui_init(void)
                                               false, &ui_font_sarasa16);
     lv_disp_set_theme(dispp, theme);
     ui_clock_screen_init();
-    ui_menu_screen_init();
-    ui____initial_actions0 = lv_obj_create(NULL);
-    lv_disp_load_scr(clock_screen.screen);
 }

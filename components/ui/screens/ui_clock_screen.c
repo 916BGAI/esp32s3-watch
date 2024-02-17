@@ -4,7 +4,7 @@
 #include "nvs_flash.h"
 #include "../main/include/sntp.h"
 #include "../ui.h"
-#include "ui_helpers.h"
+#include "ui_menu_screen.h"
 #include "ui_clock_screen.h"
 
 clock_screen_t clock_screen;
@@ -16,7 +16,6 @@ static lv_meter_indicator_t * indic_sec;
 
 static void ui_time_update(lv_timer_t *timer);
 static void ui_time_calibrate(lv_timer_t *timer);
-static void ui_event_clock_screen(lv_event_t *e);
 
 void ui_clock_screen_init(void)
 {
@@ -71,14 +70,19 @@ void ui_clock_screen_init(void)
     ui_time_update(NULL);
 
     lv_obj_add_event_cb(clock_screen.screen, ui_event_clock_screen, LV_EVENT_ALL, NULL);
+
+    lv_disp_load_scr(clock_screen.screen);
 }
 
-static void ui_event_clock_screen(lv_event_t *e)
+void ui_event_menu_screen(lv_event_t *e)
 {
     const lv_event_code_t event_code = lv_event_get_code(e);
-    if (event_code == LV_EVENT_GESTURE && lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_BOTTOM) {
+    menu_screen_t *menu_screen = (menu_screen_t *)e->user_data;
+
+    if (event_code == LV_EVENT_GESTURE && lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_TOP) {
         lv_indev_wait_release(lv_indev_get_act());
-        _ui_screen_change(&ui_menu_screen, LV_SCR_LOAD_ANIM_FADE_ON, 300, 0, &ui_menu_screen_init);
+        lv_scr_load_anim(clock_screen.screen, LV_SCR_LOAD_ANIM_OUT_TOP, 300, 0, true);
+        free(menu_screen);
     }
 }
 

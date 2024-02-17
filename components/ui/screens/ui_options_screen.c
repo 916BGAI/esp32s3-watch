@@ -1,8 +1,7 @@
 #include "../ui.h"
+#include "ui_menu_screen.h"
 #include "ui_brightness_app.h"
 #include "ui_options_screen.h"
-
-static void ui_event_options_screen(lv_event_t *e);
 
 void ui_options_screen_init(void)
 {
@@ -30,7 +29,7 @@ void ui_options_screen_init(void)
     lv_label_set_text(return_button_label, "返回");
     lv_obj_center(return_button_label);
     lv_obj_add_event_cb(options_screen->return_button, return_save_button_event_callback, LV_EVENT_CLICKED,
-                        (void *)options_screen);
+                        options_screen);
     lv_obj_add_flag(options_screen->return_button, LV_OBJ_FLAG_HIDDEN);
 
     options_screen->save_button = lv_btn_create(options_screen->top_contanier);
@@ -40,7 +39,7 @@ void ui_options_screen_init(void)
     lv_label_set_text(save_button_label, "保存");
     lv_obj_center(save_button_label);
     lv_obj_add_event_cb(options_screen->save_button, return_save_button_event_callback, LV_EVENT_CLICKED,
-                        (void *)options_screen);
+                        options_screen);
     lv_obj_add_flag(options_screen->save_button, LV_OBJ_FLAG_HIDDEN);
 
     options_screen->list = lv_list_create(options_screen->screen);
@@ -48,28 +47,15 @@ void ui_options_screen_init(void)
     lv_obj_align(options_screen->list, LV_ALIGN_TOP_MID, 0, 40);
 
     lv_obj_t *btn = lv_list_add_btn(options_screen->list, UI_SYMBOL_BRIGHTNESS, "屏幕亮度");
-    lv_obj_add_event_cb(btn, brightness_event_callback, LV_EVENT_CLICKED, (void *)options_screen);
+    lv_obj_add_event_cb(btn, brightness_event_callback, LV_EVENT_CLICKED, options_screen);
     btn = lv_list_add_btn(options_screen->list, UI_SYMBOL_WIFI, "Wi-Fi");
-    lv_obj_add_event_cb(btn, brightness_event_callback, LV_EVENT_CLICKED, (void *)options_screen);
+    lv_obj_add_event_cb(btn, brightness_event_callback, LV_EVENT_CLICKED, options_screen);
 
     lv_style_init(&options_screen->style);
     lv_style_set_border_width(&options_screen->style, 0);
     lv_obj_add_style(options_screen->list, &options_screen->style, 0);
 
-    lv_obj_add_event_cb(options_screen->screen, ui_event_options_screen, LV_EVENT_ALL, (void *)options_screen);
-    lv_disp_load_scr(options_screen->screen);
-}
+    lv_obj_add_event_cb(options_screen->screen, ui_event_options_screen, LV_EVENT_ALL, options_screen);
 
-static void ui_event_options_screen(lv_event_t *e)
-{
-    options_screen_t *options_screen = (options_screen_t *)e->user_data;
-
-    const lv_event_code_t event_code = lv_event_get_code(e);
-    if (event_code == LV_EVENT_GESTURE && lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_RIGHT &&
-        options_screen->lock == false) {
-        lv_indev_wait_release(lv_indev_get_act());
-        lv_scr_load_anim(ui_menu_screen, LV_SCR_LOAD_ANIM_FADE_ON, 300, 0, true);
-    } else if (event_code == LV_EVENT_SCREEN_UNLOADED) {
-        free(options_screen);
-    }
+    lv_scr_load_anim(options_screen->screen, LV_SCR_LOAD_ANIM_FADE_ON, 300, 0, true);
 }

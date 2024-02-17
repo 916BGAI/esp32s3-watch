@@ -18,9 +18,9 @@ static void slider_event_cb(lv_event_t *e)
 
 void brightness_event_callback(lv_event_t *e)
 {
+    brightness_app = (brightness_app_t *)malloc(sizeof(brightness_app_t));
     options_screen_t *options_screen = (options_screen_t *)e->user_data;
 
-    brightness_app = (brightness_app_t *)malloc(sizeof(brightness_app_t));
     options_screen->lock = true;
 
     lv_obj_add_flag(options_screen->list, LV_OBJ_FLAG_HIDDEN);

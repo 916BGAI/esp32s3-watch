@@ -10,17 +10,17 @@ typedef struct {
     lv_obj_t *screen;
     lv_obj_t *tv;
 
-    struct _timer {
+    struct {
         lv_timer_t *time;
         lv_timer_t *calibrate;
     } timer;
 
-    struct _tile {
+    struct {
         lv_obj_t *time;
         lv_obj_t *date;
     } tile;
 
-    struct _label {
+    struct {
         lv_obj_t *time;
         lv_obj_t *date;
     } label;
@@ -29,6 +29,8 @@ typedef struct {
     lv_obj_t * meter;
     bool lock;
 } clock_screen_t;
+
+void ui_event_menu_screen(lv_event_t *e);
 
 #ifdef __cplusplus
 } /*extern "C"*/
