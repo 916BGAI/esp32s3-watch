@@ -77,7 +77,7 @@ void ui_clock_screen_init(void)
 void ui_event_menu_screen(lv_event_t *e)
 {
     const lv_event_code_t event_code = lv_event_get_code(e);
-    menu_screen_t *menu_screen = (menu_screen_t *)e->user_data;
+    menu_screen_t *menu_screen = e->user_data;
 
     if (event_code == LV_EVENT_GESTURE && lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_TOP) {
         lv_indev_wait_release(lv_indev_get_act());

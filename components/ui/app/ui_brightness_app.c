@@ -5,7 +5,7 @@
 #include "esp_lvgl_port.h"
 #include "display.h"
 
-static brightness_app_t *brightness_app;
+brightness_app_t *brightness_app;
 
 static void slider_event_cb(lv_event_t *e)
 {
@@ -19,9 +19,9 @@ static void slider_event_cb(lv_event_t *e)
 void brightness_event_callback(lv_event_t *e)
 {
     brightness_app = (brightness_app_t *)malloc(sizeof(brightness_app_t));
-    options_screen_t *options_screen = (options_screen_t *)e->user_data;
+    options_screen_t *options_screen = e->user_data;
 
-    options_screen->lock = true;
+    options_screen->app = Brightness;
 
     lv_obj_add_flag(options_screen->list, LV_OBJ_FLAG_HIDDEN);
     brightness_app->contanier = lv_obj_create(options_screen->screen);
@@ -86,32 +86,4 @@ void brightness_event_callback(lv_event_t *e)
                      LV_PART_INDICATOR | LV_STATE_PRESSED);
     lv_obj_add_style(brightness_app->slider, &brightness_app->style_knob, LV_PART_KNOB);
     lv_obj_add_style(brightness_app->slider, &brightness_app->style_pressed_color, LV_PART_KNOB | LV_STATE_PRESSED);
-}
-
-void return_save_button_event_callback(lv_event_t *e)
-{
-    options_screen_t *options_screen = (options_screen_t *)e->user_data;
-
-    lv_obj_t *target = lv_event_get_target(e);
-    if (target == options_screen->save_button) {
-        uint32_t brightness_percent = lv_slider_get_value(brightness_app->slider);
-        lvgl_port_lock(0);
-        display_brightness_set(brightness_percent);
-        lvgl_port_unlock();
-    }
-
-    lv_obj_add_flag(options_screen->return_button, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_add_flag(options_screen->save_button, LV_OBJ_FLAG_HIDDEN);
-    lv_label_set_text(options_screen->top_label, "设 置");
-    lv_obj_load_anim(options_screen->top_label, options_screen->top_label, LV_SCR_LOAD_ANIM_FADE_IN, 200, 100);
-    lv_obj_load_anim(options_screen->list, brightness_app->contanier, LV_SCR_LOAD_ANIM_OVER_RIGHT, 200, 100);
-    lv_style_reset(&brightness_app->style_main);
-    lv_style_reset(&brightness_app->style_indicator);
-    lv_style_reset(&brightness_app->style_pressed_color);
-    lv_style_reset(&brightness_app->style_knob);
-    lv_style_reset(&brightness_app->style_pressed_color);
-    lv_obj_del(brightness_app->contanier);
-    options_screen->lock = false;
-    free(brightness_app);
-    lv_obj_clear_flag(options_screen->list, LV_OBJ_FLAG_HIDDEN);
 }

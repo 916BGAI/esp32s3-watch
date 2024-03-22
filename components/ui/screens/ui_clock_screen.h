@@ -27,7 +27,6 @@ typedef struct {
 
     lv_obj_t *clock_contanier;
     lv_obj_t * meter;
-    bool lock;
 } clock_screen_t;
 
 void ui_event_menu_screen(lv_event_t *e);

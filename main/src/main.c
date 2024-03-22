@@ -21,7 +21,11 @@ void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 void app_main(void)
 {
     esp_log_level_set("*", ESP_LOG_INFO);
-    esp_psram_extram_reserve_dma_pool(163840);
+
+    ESP_LOGI("main", "free_internal_heap_size = %ldKB\n\r", esp_get_free_internal_heap_size() / 1024);
+    ESP_LOGI("main", "free_heap_size = %ldKB\n\r", esp_get_free_heap_size() / 1024);
+
+    esp_psram_extram_reserve_dma_pool(262144);
     nvs_init();
 
     display_init();
@@ -32,6 +36,9 @@ void app_main(void)
 
     // wifi_init();
     // time_update();
+
+    ESP_LOGI("main", "free_internal_heap_size = %ldKB\n\r", esp_get_free_internal_heap_size() / 1024);
+    ESP_LOGI("main", "free_heap_size = %ldKB\n\r", esp_get_free_heap_size() / 1024);
 
     for (;;) {
         vTaskDelay(1000 / portTICK_PERIOD_MS);

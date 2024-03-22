@@ -66,7 +66,7 @@ void ui_event_options_screen(lv_event_t *e)
     options_screen_t *options_screen = (options_screen_t *)e->user_data;
 
     if (event_code == LV_EVENT_GESTURE && lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_RIGHT &&
-        options_screen->lock == false) {
+        options_screen->app == NO_APP) {
         lv_indev_wait_release(lv_indev_get_act());
         ui_menu_screen_init();
         lv_scr_load_anim(menu_screen->screen, LV_SCR_LOAD_ANIM_FADE_ON, 300, 0, true);

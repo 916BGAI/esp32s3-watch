@@ -18,7 +18,6 @@ typedef struct {
 } brightness_app_t;
 
 void brightness_event_callback(lv_event_t *e);
-void return_save_button_event_callback(lv_event_t *e);
 
 #ifdef __cplusplus
 } /*extern "C"*/

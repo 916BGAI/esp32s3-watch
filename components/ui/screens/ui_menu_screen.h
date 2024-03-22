@@ -10,7 +10,6 @@ typedef struct {
     lv_obj_t *screen;
     lv_obj_t *tv;
     lv_obj_t *tile;
-    bool lock;
 } menu_screen_t;
 
 typedef struct {
