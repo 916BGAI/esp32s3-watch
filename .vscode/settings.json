@@ -9,13 +9,12 @@
     },
     "idf.espIdfPathWin": "D:/Espressif/frameworks/esp-idf-v5.1.2/",
     "idf.openOcdConfigs": [
-        "interface/ftdi/esp32_devkitj_v1.cfg",
-        "target/esp32s3.cfg"
+        "board/esp32s3-builtin.cfg"
     ],
     "idf.portWin": "COM6",
     "idf.pythonBinPathWin": "D:\\Espressif\\tools\\python_env\\idf5.1_py3.11_env\\Scripts\\python.exe",
     "idf.toolsPathWin": "D:\\Espressif\\tools",
-    "idf.flashType": "UART",
+    "idf.flashType": "JTAG",
     "files.associations": {
         "portmacro.h": "c",
         "sdkconfig.h": "c",
