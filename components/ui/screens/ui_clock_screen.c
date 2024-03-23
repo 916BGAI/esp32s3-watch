@@ -14,6 +14,7 @@ static lv_meter_indicator_t * indic_hour;
 static lv_meter_indicator_t * indic_min;
 static lv_meter_indicator_t * indic_sec;
 
+static void ui_event_clock_screen(lv_event_t *e);
 static void ui_time_update(lv_timer_t *timer);
 static void ui_time_calibrate(lv_timer_t *timer);
 
@@ -74,15 +75,14 @@ void ui_clock_screen_init(void)
     lv_disp_load_scr(clock_screen.screen);
 }
 
-void ui_event_menu_screen(lv_event_t *e)
+extern menu_screen_t *menu_screen;
+void ui_event_clock_screen(lv_event_t *e)
 {
     const lv_event_code_t event_code = lv_event_get_code(e);
-    menu_screen_t *menu_screen = e->user_data;
-
-    if (event_code == LV_EVENT_GESTURE && lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_TOP) {
+    if (event_code == LV_EVENT_GESTURE && lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_BOTTOM) {
         lv_indev_wait_release(lv_indev_get_act());
-        lv_scr_load_anim(clock_screen.screen, LV_SCR_LOAD_ANIM_OUT_TOP, 300, 0, true);
-        free(menu_screen);
+        ui_menu_screen_init();
+        lv_scr_load_anim(menu_screen->screen, LV_SCR_LOAD_ANIM_OVER_BOTTOM, 300, 0, false);
     }
 }
 

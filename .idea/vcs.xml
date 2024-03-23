@@ -9,13 +9,13 @@
     <mapping directory="$USER_HOME$/Applications/espressif/esp-idf/components/bt/controller/lib_esp32c3_family" vcs="Git" />
     <mapping directory="$USER_HOME$/Applications/espressif/esp-idf/components/bt/controller/lib_esp32c6/esp32c6-bt-lib" vcs="Git" />
     <mapping directory="$USER_HOME$/Applications/espressif/esp-idf/components/bt/controller/lib_esp32h2/esp32h2-bt-lib" vcs="Git" />
+    <mapping directory="$USER_HOME$/Applications/espressif/esp-idf/components/bt/esp_ble_mesh/lib/lib" vcs="Git" />
     <mapping directory="$USER_HOME$/Applications/espressif/esp-idf/components/bt/host/nimble/nimble" vcs="Git" />
     <mapping directory="$USER_HOME$/Applications/espressif/esp-idf/components/cmock/CMock" vcs="Git" />
     <mapping directory="$USER_HOME$/Applications/espressif/esp-idf/components/esp_coex/lib" vcs="Git" />
     <mapping directory="$USER_HOME$/Applications/espressif/esp-idf/components/esp_phy/lib" vcs="Git" />
     <mapping directory="$USER_HOME$/Applications/espressif/esp-idf/components/esp_wifi/lib" vcs="Git" />
     <mapping directory="$USER_HOME$/Applications/espressif/esp-idf/components/heap/tlsf" vcs="Git" />
-    <mapping directory="$USER_HOME$/Applications/espressif/esp-idf/components/ieee802154/lib" vcs="Git" />
     <mapping directory="$USER_HOME$/Applications/espressif/esp-idf/components/json/cJSON" vcs="Git" />
     <mapping directory="$USER_HOME$/Applications/espressif/esp-idf/components/lwip/lwip" vcs="Git" />
     <mapping directory="$USER_HOME$/Applications/espressif/esp-idf/components/mbedtls/mbedtls" vcs="Git" />

@@ -6,11 +6,12 @@
 #include "esp_lvgl_port.h"
 #include "display.h"
 
-void return_save_button_event_callback(lv_event_t *e);
+static void return_save_button_event_callback(lv_event_t *e);
+static void ui_event_options_screen(lv_event_t *e);
 
 void ui_options_screen_init(void)
 {
-    options_screen_t *options_screen = (options_screen_t *)malloc(sizeof(options_screen_t));
+    options_screen_t *options_screen = malloc(sizeof(options_screen_t));
     options_screen->app = NO_APP;
 
     options_screen->screen = lv_obj_create(NULL);
@@ -102,4 +103,20 @@ void return_save_button_event_callback(lv_event_t *e)
     options_screen->app = NO_APP;
     free(brightness_app);
     lv_obj_clear_flag(options_screen->list, LV_OBJ_FLAG_HIDDEN);
+}
+
+extern menu_screen_t *menu_screen;
+void ui_event_options_screen(lv_event_t *e)
+{
+    const lv_event_code_t event_code = lv_event_get_code(e);
+    options_screen_t *options_screen = e->user_data;
+
+    if (event_code == LV_EVENT_GESTURE && lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_RIGHT &&
+        options_screen->app == NO_APP) {
+        lv_indev_wait_release(lv_indev_get_act());
+        ui_menu_screen_init();
+        lv_scr_load_anim(menu_screen->screen, LV_SCR_LOAD_ANIM_FADE_ON, 300, 0, true);
+    } else if (event_code == LV_EVENT_SCREEN_UNLOADED) {
+        free(options_screen);
+    }
 }

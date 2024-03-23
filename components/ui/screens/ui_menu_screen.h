@@ -18,10 +18,6 @@ typedef struct {
     const lv_img_dsc_t *img_src;
 } app_info_t;
 
-void app_reg(app_info_t *app_info);
-void ui_event_clock_screen(lv_event_t *e);
-void ui_event_options_screen(lv_event_t *e);
-
 #ifdef __cplusplus
 } /*extern "C"*/
 #endif

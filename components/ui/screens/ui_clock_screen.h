@@ -29,8 +29,6 @@ typedef struct {
     lv_obj_t * meter;
 } clock_screen_t;
 
-void ui_event_menu_screen(lv_event_t *e);
-
 #ifdef __cplusplus
 } /*extern "C"*/
 #endif

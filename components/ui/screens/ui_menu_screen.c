@@ -3,14 +3,15 @@
 #include "ui_options_screen.h"
 #include "ui_menu_screen.h"
 
-static menu_screen_t *menu_screen;
+menu_screen_t *menu_screen;
 
-void app_reg(app_info_t *app_info);
+static void app_reg(app_info_t *app_info);
+static void ui_event_menu_screen(lv_event_t *e);
 static void app_button_event_cb(lv_event_t *e);
 
 void ui_menu_screen_init(void)
 {
-    menu_screen = (menu_screen_t *)malloc(sizeof(menu_screen_t));
+    menu_screen = malloc(sizeof(menu_screen_t));
     menu_screen->screen = lv_obj_create(NULL);
     lv_obj_clear_flag(menu_screen->screen, LV_OBJ_FLAG_SCROLLABLE);
 
@@ -47,31 +48,7 @@ void ui_menu_screen_init(void)
     };
     app_reg(&app4);
 
-    lv_obj_add_event_cb(menu_screen->screen, ui_event_menu_screen, LV_EVENT_ALL, menu_screen);
-}
-
-void ui_event_clock_screen(lv_event_t *e)
-{
-    const lv_event_code_t event_code = lv_event_get_code(e);
-    if (event_code == LV_EVENT_GESTURE && lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_BOTTOM) {
-        lv_indev_wait_release(lv_indev_get_act());
-        ui_menu_screen_init();
-        lv_scr_load_anim(menu_screen->screen, LV_SCR_LOAD_ANIM_OVER_BOTTOM, 300, 0, false);
-    }
-}
-
-void ui_event_options_screen(lv_event_t *e)
-{
-    const lv_event_code_t event_code = lv_event_get_code(e);
-    options_screen_t *options_screen = (options_screen_t *)e->user_data;
-
-    if (event_code == LV_EVENT_GESTURE && lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_RIGHT &&
-        options_screen->app == NO_APP) {
-        lv_indev_wait_release(lv_indev_get_act());
-        ui_menu_screen_init();
-        lv_scr_load_anim(menu_screen->screen, LV_SCR_LOAD_ANIM_FADE_ON, 300, 0, true);
-        free(options_screen);
-    }
+    lv_obj_add_event_cb(menu_screen->screen, ui_event_menu_screen, LV_EVENT_ALL, NULL);
 }
 
 void app_reg(app_info_t *app_info)
@@ -97,7 +74,18 @@ void app_reg(app_info_t *app_info)
 }
 
 extern clock_screen_t clock_screen;
+void ui_event_menu_screen(lv_event_t *e)
+{
+    const lv_event_code_t event_code = lv_event_get_code(e);
 
+    if (event_code == LV_EVENT_GESTURE && lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_TOP) {
+        lv_indev_wait_release(lv_indev_get_act());
+        lv_scr_load_anim(clock_screen.screen, LV_SCR_LOAD_ANIM_OUT_TOP, 300, 0, true);
+        free(menu_screen);
+    }
+}
+
+extern clock_screen_t clock_screen;
 static void app_button_event_cb(lv_event_t *e)
 {
     const lv_event_code_t event_code = lv_event_get_code(e);
