@@ -58,11 +58,10 @@ void ui_clock_screen_init(void)
     lv_meter_set_scale_major_ticks(clock_screen.meter, scale_hour, 1, 2, 10, lv_color_black(), 10);    /*Every tick is major*/
     lv_meter_set_scale_range(clock_screen.meter, scale_hour, 1, 12, 330, 300);       /*[1..12] values in an almost full circle*/
 
-    LV_IMG_DECLARE(img_hand);
     /*Add a the hands from images*/
-    indic_hour = lv_meter_add_needle_img(clock_screen.meter, scale_min, &img_hand, 5, 5);
-    indic_min = lv_meter_add_needle_img(clock_screen.meter, scale_min, &img_hand, 5, 5);
-    indic_sec = lv_meter_add_needle_img(clock_screen.meter, scale_min, &img_hand, 5, 5);
+    indic_hour = lv_meter_add_needle_img(clock_screen.meter, scale_min, &ui_img_hand_hour, 5, 5);
+    indic_min = lv_meter_add_needle_img(clock_screen.meter, scale_min, &ui_img_hand_min, 5, 5);
+    indic_sec = lv_meter_add_needle_img(clock_screen.meter, scale_min, &ui_img_hand_sec, 5, 5);
 
     ESP_ERROR_CHECK(get_time_from_nvs());
 
