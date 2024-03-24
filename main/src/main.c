@@ -9,7 +9,7 @@
 #include "main.h"
 #include "display.h"
 #include "ui.h"
-#include "time.h"
+#include "fatfs.h"
 #include "wifi.h"
 #include "sntp.h"
 
@@ -27,6 +27,8 @@ void app_main(void)
 
     esp_psram_extram_reserve_dma_pool(262144);
     nvs_init();
+
+    flash_fatfs_init();
 
     display_init();
     ESP_LOGI("main", "Display LVGL");
