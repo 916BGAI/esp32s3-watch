@@ -29,14 +29,14 @@ void brightness_event_callback(lv_event_t *e)
     lv_obj_add_style(brightness_app->contanier, &options_screen->style, 0);
     lv_obj_align(brightness_app->contanier, LV_ALIGN_TOP_MID, 0, 40);
     lv_obj_load_anim(brightness_app->contanier, options_screen->list, LV_SCR_LOAD_ANIM_OVER_LEFT, 200, 100);
-    lv_label_set_text(options_screen->top_label, "屏幕亮度");
-    lv_obj_load_anim(options_screen->top_label, options_screen->top_label, LV_SCR_LOAD_ANIM_FADE_IN, 200, 100);
+    lv_label_set_text(options_screen->label.top, "屏幕亮度");
+    lv_obj_load_anim(options_screen->label.top, options_screen->label.top, LV_SCR_LOAD_ANIM_FADE_IN, 200, 100);
 
-    lv_obj_clear_flag(options_screen->return_button, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_clear_flag(options_screen->save_button, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_load_anim(options_screen->return_button, options_screen->return_button, LV_SCR_LOAD_ANIM_OVER_RIGHT, 200,
+    lv_obj_clear_flag(options_screen->button.ret, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_clear_flag(options_screen->button.save, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_load_anim(options_screen->button.ret, options_screen->button.ret, LV_SCR_LOAD_ANIM_OVER_RIGHT, 200,
                      100);
-    lv_obj_load_anim(options_screen->save_button, options_screen->save_button, LV_SCR_LOAD_ANIM_OVER_LEFT, 200, 100);
+    lv_obj_load_anim(options_screen->button.save, options_screen->button.save, LV_SCR_LOAD_ANIM_OVER_LEFT, 200, 100);
 
     /*Create a transition*/
     static const lv_style_prop_t props[] = { LV_STYLE_BG_COLOR, 0 };

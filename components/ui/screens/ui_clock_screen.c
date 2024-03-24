@@ -30,12 +30,12 @@ void ui_clock_screen_init(void)
     lv_obj_set_style_bg_opa(clock_screen.tv, LV_OPA_0, LV_PART_SCROLLBAR | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(clock_screen.tv, LV_OPA_0, LV_PART_SCROLLBAR | LV_STATE_SCROLLED);
     lv_obj_set_style_text_font(clock_screen.tv, &ui_font_sarasa18, LV_PART_MAIN | LV_STATE_DEFAULT);
-    clock_screen.tile.time = lv_tileview_add_tile(clock_screen.tv, 0, 0, LV_DIR_LEFT | LV_DIR_RIGHT);
-    clock_screen.label.time = lv_label_create(clock_screen.tile.time);
-    lv_obj_center(clock_screen.label.time);
-    clock_screen.tile.date = lv_tileview_add_tile(clock_screen.tv, 1, 0, LV_DIR_LEFT | LV_DIR_RIGHT);
-    clock_screen.label.date = lv_label_create(clock_screen.tile.date);
-    lv_obj_center(clock_screen.label.date);
+    clock_screen.time.tile = lv_tileview_add_tile(clock_screen.tv, 0, 0, LV_DIR_LEFT | LV_DIR_RIGHT);
+    clock_screen.time.label = lv_label_create(clock_screen.time.tile);
+    lv_obj_center(clock_screen.time.label);
+    clock_screen.date.tile = lv_tileview_add_tile(clock_screen.tv, 1, 0, LV_DIR_LEFT | LV_DIR_RIGHT);
+    clock_screen.date.label = lv_label_create(clock_screen.date.tile);
+    lv_obj_center(clock_screen.date.label);
 
     clock_screen.clock_contanier = lv_obj_create(clock_screen.screen);
     lv_obj_set_style_border_width(clock_screen.clock_contanier, 0, LV_PART_MAIN);
@@ -96,10 +96,10 @@ void ui_time_update(lv_timer_t *timer)
     timeinfo = localtime(&timeval.tv_sec);
     char time_str[40];
     sprintf(time_str, "%02d : %02d : %02d", timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
-    lv_label_set_text_fmt(clock_screen.label.time, "%s", time_str);
+    lv_label_set_text_fmt(clock_screen.time.label, "%s", time_str);
     char data_str[48];
     sprintf(data_str, "%04d 年 %02d 月 %02d 日", timeinfo->tm_year+1900, timeinfo->tm_mon, timeinfo->tm_mday);
-    lv_label_set_text_fmt(clock_screen.label.date, "%s", data_str);
+    lv_label_set_text_fmt(clock_screen.date.label, "%s", data_str);
 
     lv_meter_set_indicator_end_value(clock_screen.meter, indic_hour,
                                      (timeinfo->tm_hour <= 12 ? timeinfo->tm_hour : timeinfo->tm_hour - 12) * 5);
