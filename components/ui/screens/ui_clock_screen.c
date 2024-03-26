@@ -98,7 +98,7 @@ void ui_time_update(lv_timer_t *timer)
     sprintf(time_str, "%02d : %02d : %02d", timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
     lv_label_set_text_fmt(clock_screen.time.label, "%s", time_str);
     char data_str[48];
-    sprintf(data_str, "%04d 年 %02d 月 %02d 日", timeinfo->tm_year+1900, timeinfo->tm_mon, timeinfo->tm_mday);
+    sprintf(data_str, "%04d 年 %02d 月 %02d 日", timeinfo->tm_year+1900, timeinfo->tm_mon+1, timeinfo->tm_mday);
     lv_label_set_text_fmt(clock_screen.date.label, "%s", data_str);
 
     lv_meter_set_indicator_end_value(clock_screen.meter, indic_hour,

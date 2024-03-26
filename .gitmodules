@@ -2,3 +2,7 @@
 	path = components/lvgl
 	url = https://github.com/916BGAI/lvgl.git
 	branch = release/v8.4
+[submodule "components/tinyusb"]
+	path = components/tinyusb
+	url = https://github.com/916BGAI/tinyusb.git
+	branch = release/v0.15

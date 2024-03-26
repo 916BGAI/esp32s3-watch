@@ -12,8 +12,8 @@
 #define WIFI_CONNECTED_BIT BIT0
 #define WIFI_FAIL_BIT      BIT1
 
-static uint8_t wifi_ssid[32] = "TP-LINK_2";
-static uint8_t wifi_pass[64] = "88888888";
+static uint8_t wifi_ssid[32] = "Redmi";
+static uint8_t wifi_pass[64] = "20011201ABCabc";
 static EventGroupHandle_t s_wifi_event_group;
 static const char *TAG = "WIFI";
 

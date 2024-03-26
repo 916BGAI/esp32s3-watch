@@ -5,11 +5,10 @@
 #include "sdkconfig.h"
 #include "esp_log.h"
 #include "esp_lvgl_port.h"
-#include "esp_private/esp_psram_extram.h"
 #include "main.h"
 #include "display.h"
 #include "ui.h"
-#include "fatfs.h"
+#include "usb.h"
 #include "wifi.h"
 #include "sntp.h"
 
@@ -22,13 +21,13 @@ void app_main(void)
 {
     esp_log_level_set("*", ESP_LOG_INFO);
 
-    ESP_LOGI("main", "free_internal_heap_size = %ldKB\n\r", esp_get_free_internal_heap_size() / 1024);
-    ESP_LOGI("main", "free_heap_size = %ldKB\n\r", esp_get_free_heap_size() / 1024);
-
-    esp_psram_extram_reserve_dma_pool(262144);
     nvs_init();
+    usb_init();
 
-    flash_fatfs_init();
+    vTaskDelay(3000 / portTICK_PERIOD_MS);
+
+    ESP_LOGI("main", "free_internal_heap_size = %ldKB", esp_get_free_internal_heap_size() / 1024);
+    ESP_LOGI("main", "free_heap_size = %ldKB", esp_get_free_heap_size() / 1024);
 
     display_init();
     ESP_LOGI("main", "Display LVGL");
@@ -36,11 +35,11 @@ void app_main(void)
     ui_init();
     lvgl_port_unlock();
 
-    // wifi_init();
-    // time_update();
+    wifi_init();
+    time_update();
 
-    ESP_LOGI("main", "free_internal_heap_size = %ldKB\n\r", esp_get_free_internal_heap_size() / 1024);
-    ESP_LOGI("main", "free_heap_size = %ldKB\n\r", esp_get_free_heap_size() / 1024);
+    ESP_LOGI("main", "free_internal_heap_size = %ldKB", esp_get_free_internal_heap_size() / 1024);
+    ESP_LOGI("main", "free_heap_size = %ldKB", esp_get_free_heap_size() / 1024);
 
     for (;;) {
         vTaskDelay(1000 / portTICK_PERIOD_MS);

@@ -181,8 +181,8 @@ static lv_disp_t *display_lcd_init(void)
             .mirror_y = false,
         },
         .flags = {
-            .buff_dma = false,
-            .buff_spiram = true,
+            .buff_dma = true,
+            .buff_spiram = false,
         },
     };
 
