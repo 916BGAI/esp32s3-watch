@@ -22,14 +22,14 @@ void ui_clock_screen_init(void)
 {
     clock_screen.screen = lv_obj_create(NULL);
     lv_obj_clear_flag(clock_screen.screen, LV_OBJ_FLAG_SCROLLABLE);
-    lv_obj_set_style_text_font(clock_screen.screen, &ui_font_sarasa16, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(clock_screen.screen, SarasaMonoR_18, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     clock_screen.tv = lv_tileview_create(clock_screen.screen);
     lv_obj_set_size(clock_screen.tv, 240, 40);
     lv_obj_align(clock_screen.tv, LV_ALIGN_TOP_MID, 0, 5);
     lv_obj_set_style_bg_opa(clock_screen.tv, LV_OPA_0, LV_PART_SCROLLBAR | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(clock_screen.tv, LV_OPA_0, LV_PART_SCROLLBAR | LV_STATE_SCROLLED);
-    lv_obj_set_style_text_font(clock_screen.tv, &ui_font_sarasa18, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(clock_screen.tv, SarasaMonoB_18, LV_PART_MAIN | LV_STATE_DEFAULT);
     clock_screen.time.tile = lv_tileview_add_tile(clock_screen.tv, 0, 0, LV_DIR_LEFT | LV_DIR_RIGHT);
     clock_screen.time.label = lv_label_create(clock_screen.time.tile);
     lv_obj_center(clock_screen.time.label);

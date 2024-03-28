@@ -20,13 +20,21 @@ LV_IMG_DECLARE(ui_img_hand_hour);
 LV_IMG_DECLARE(ui_img_hand_min);
 LV_IMG_DECLARE(ui_img_hand_sec);
 
-LV_FONT_DECLARE(ui_font_sarasa16);
-LV_FONT_DECLARE(ui_font_sarasa18);
+extern lv_font_t *SarasaMonoR_16;
+extern lv_font_t *SarasaMonoR_18;
+extern lv_font_t *SarasaMonoB_18;
 
 #define UI_SYMBOL_WIFI            "\xEE\x9A\xA4"
 #define UI_SYMBOL_BRIGHTNESS      "\xEF\x82\x8F"
 
 void ui_init(void);
+
+static inline void lv_font_init()
+{
+    SarasaMonoR_16 = lv_font_load("A:fonts/SarasaMonoSC_regular_16.bin");
+    SarasaMonoR_18 = lv_font_load("A:fonts/SarasaMonoSC_regular_18.bin");
+    SarasaMonoB_18 = lv_font_load("A:fonts/SarasaMonoSC_bold_18.bin");
+}
 
 #ifdef __cplusplus
 } /*extern "C"*/

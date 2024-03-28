@@ -8,6 +8,8 @@
 #include "tusb_console.h"
 #include "tusb_msc_storage.h"
 
+#define USB_USB 1
+
 static const char *TAG = "TinyUSB";
 
 static uint8_t buf[CONFIG_TINYUSB_CDC_RX_BUFSIZE + 1];
@@ -95,16 +97,17 @@ static char const *string_desc_arr[] = {
 
 static esp_err_t storage_init_spiflash(wl_handle_t *wl_handle);
 static void storage_mount_changed_cb(tinyusb_msc_event_t *event);
-static void _mount(void);
+static void msc_mount(void);
+// static void msc_unmount(void);
 static void tinyusb_cdc_rx_callback(int itf, cdcacm_event_t *event);
 static void tinyusb_cdc_line_state_changed_callback(int itf, cdcacm_event_t *event);
 
 #include <fcntl.h>
 #include "vfs_tinyusb.h"
 
-esp_err_t usb_init(void)
+esp_err_t fatfs_init(void)
 {
-    ESP_LOGI(TAG, "Initializing storage...");
+    ESP_LOGI(TAG, "Initializing fatfs...");
 
     static wl_handle_t wl_handle = WL_INVALID_HANDLE;
     ESP_ERROR_CHECK(storage_init_spiflash(&wl_handle));
@@ -117,8 +120,13 @@ esp_err_t usb_init(void)
     ESP_ERROR_CHECK(tinyusb_msc_storage_init_spiflash(&config_spi));
     ESP_ERROR_CHECK(tinyusb_msc_register_callback(TINYUSB_MSC_EVENT_MOUNT_CHANGED, storage_mount_changed_cb));
 
-    _mount();
+    msc_mount();
 
+    return ESP_OK;
+}
+
+esp_err_t usb_init(void)
+{
     ESP_LOGI(TAG, "USB Composite initialization");
     const tinyusb_config_t tusb_cfg = {
         .device_descriptor = &descriptor_config,
@@ -177,7 +185,7 @@ static void storage_mount_changed_cb(tinyusb_msc_event_t *event)
 }
 
 /* mount the partition and show all the files in BASE_PATH */
-static void _mount(void)
+static void msc_mount(void)
 {
     ESP_LOGI(TAG, "Mount storage...");
     ESP_ERROR_CHECK(tinyusb_msc_storage_mount(BASE_PATH));
@@ -201,6 +209,16 @@ static void _mount(void)
         printf("%s\n", d->d_name);
     }
 }
+
+// static void msc_unmount(void)
+// {
+//     if (tinyusb_msc_storage_in_use_by_usb_host()) {
+//         ESP_LOGE(TAG, "storage is already exposed");
+//         return;
+//     }
+//     ESP_LOGI(TAG, "Unmount storage...");
+//     ESP_ERROR_CHECK(tinyusb_msc_storage_unmount());
+// }
 
 static void tinyusb_cdc_rx_callback(int itf, cdcacm_event_t *event)
 {

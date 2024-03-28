@@ -27,26 +27,26 @@ void wifi_event_callback(lv_event_t *e)
 
     /* Switch of Wi-Fi */
     wifi_app->sw.contanier = lv_list_create(wifi_app->contanier);
-    lv_obj_set_size(wifi_app->sw.contanier, 190, 43);
+    lv_obj_set_size(wifi_app->sw.contanier, 210, 53);
     lv_obj_align(wifi_app->sw.contanier, LV_ALIGN_TOP_MID, 0, 0);
     lv_obj_add_style(wifi_app->sw.contanier, &options_screen->style, 0);
     lv_obj_clear_flag(wifi_app->sw.contanier, LV_OBJ_FLAG_SCROLLABLE);
     lv_obj_set_style_bg_color(wifi_app->sw.contanier, lv_color_hex(0xD5DAF9), 0);
     wifi_app->sw.label = lv_label_create(wifi_app->sw.contanier);
     lv_obj_add_flag(wifi_app->sw.label, LV_OBJ_FLAG_IGNORE_LAYOUT);
-    lv_obj_set_style_text_font(wifi_app->sw.label, &ui_font_sarasa16, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(wifi_app->sw.label, SarasaMonoR_18, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_label_set_text(wifi_app->sw.label, "关");
     lv_obj_align(wifi_app->sw.label, LV_ALIGN_LEFT_MID, 3, 0);
 
     wifi_app->sw.btn = lv_switch_create(wifi_app->sw.contanier);
     lv_obj_add_flag(wifi_app->sw.btn, LV_OBJ_FLAG_IGNORE_LAYOUT);
     lv_obj_set_style_bg_color(wifi_app->sw.btn, lv_color_hex(0xB1B2FF), LV_PART_INDICATOR | LV_STATE_CHECKED);
-    lv_obj_set_size(wifi_app->sw.btn, 39, 23);
+    lv_obj_set_size(wifi_app->sw.btn, 46, 29);
     lv_obj_align(wifi_app->sw.btn, LV_ALIGN_RIGHT_MID, 0, 0);
     lv_obj_add_event_cb(wifi_app->sw.btn, sw_event_cb, LV_EVENT_ALL, NULL);
 
     wifi_app->text1 = lv_label_create(wifi_app->contanier);
-    lv_obj_set_style_text_font(wifi_app->text1, &ui_font_sarasa16, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(wifi_app->text1, SarasaMonoR_16, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_label_set_text(wifi_app->text1, "若要查看可用网络，请打开 Wi-Fi");
     lv_obj_align(wifi_app->text1, LV_ALIGN_LEFT_MID, 3, 0);
 

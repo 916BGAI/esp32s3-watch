@@ -20,14 +20,14 @@ void ui_options_screen_init(void)
     options_screen->screen = lv_obj_create(NULL);
 
     options_screen->top_contanier = lv_obj_create(options_screen->screen);
-    lv_obj_set_style_text_font(options_screen->screen, &ui_font_sarasa16, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(options_screen->screen, SarasaMonoR_18, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_clear_flag(options_screen->top_contanier, LV_OBJ_FLAG_SCROLLABLE);
     lv_obj_set_size(options_screen->top_contanier, 240, 40);
     lv_obj_align(options_screen->top_contanier, LV_ALIGN_TOP_LEFT, 0, 0);
     lv_obj_set_style_bg_color(options_screen->top_contanier, lv_color_hex(0xEFF0F1), 0);
 
     options_screen->label.top = lv_label_create(options_screen->top_contanier);
-    lv_obj_set_style_text_font(options_screen->label.top, &ui_font_sarasa18, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(options_screen->label.top, SarasaMonoB_18, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_label_set_text(options_screen->label.top, "设 置");
     lv_obj_align(options_screen->label.top, LV_ALIGN_CENTER, 0, 0);
 
@@ -56,13 +56,13 @@ void ui_options_screen_init(void)
     lv_obj_t *btn = lv_list_add_btn(options_screen->list, UI_SYMBOL_BRIGHTNESS, "屏幕亮度");
     lv_obj_add_event_cb(btn, brightness_event_callback, LV_EVENT_CLICKED, options_screen);
     options_screen->label.brightness = lv_label_create(btn);
-    lv_obj_set_style_text_font(options_screen->label.brightness, &ui_font_sarasa16, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(options_screen->label.brightness, SarasaMonoR_18, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_label_set_text_fmt(options_screen->label.brightness, "%lu%%", display_brightness_get());
 
     btn = lv_list_add_btn(options_screen->list, UI_SYMBOL_WIFI, "Wi-Fi");
     lv_obj_add_event_cb(btn, wifi_event_callback, LV_EVENT_CLICKED, options_screen);
     options_screen->label.wifi = lv_label_create(btn);
-    lv_obj_set_style_text_font(options_screen->label.wifi, &ui_font_sarasa16, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(options_screen->label.wifi, SarasaMonoR_18, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_label_set_text(options_screen->label.wifi, "关");
 
     lv_style_init(&options_screen->style);

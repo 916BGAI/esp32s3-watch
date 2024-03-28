@@ -18,7 +18,7 @@ void ui_menu_screen_init(void)
     menu_screen->tv = lv_tileview_create(menu_screen->screen);
     lv_obj_set_style_bg_opa(menu_screen->tv, LV_OPA_0, LV_PART_SCROLLBAR | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(menu_screen->tv, LV_OPA_0, LV_PART_SCROLLBAR | LV_STATE_SCROLLED);
-    lv_obj_set_style_text_font(menu_screen->tv, &ui_font_sarasa18, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(menu_screen->tv, SarasaMonoB_18, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     static app_info_t app1 = {
         .id = 1,
