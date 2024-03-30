@@ -33,7 +33,6 @@ void app_main(void)
     ui_init();
     lvgl_port_unlock();
 
-    // usb_init();
     // wifi_init();
     // time_update();
 

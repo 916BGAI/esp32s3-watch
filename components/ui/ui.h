@@ -24,6 +24,7 @@ extern lv_font_t *SarasaMonoR_16;
 extern lv_font_t *SarasaMonoR_18;
 extern lv_font_t *SarasaMonoB_18;
 
+#define UI_SYMBOL_USB             "\xEE\x9F\x85"
 #define UI_SYMBOL_WIFI            "\xEE\x9A\xA4"
 #define UI_SYMBOL_BRIGHTNESS      "\xEF\x82\x8F"
 

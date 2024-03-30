@@ -7,12 +7,11 @@
 #include "tusb_cdc_acm.h"
 #include "tusb_console.h"
 #include "tusb_msc_storage.h"
-
-#define USB_USB 1
+#include "tusb_tasks.h"
 
 static const char *TAG = "TinyUSB";
 
-static uint8_t buf[CONFIG_TINYUSB_CDC_RX_BUFSIZE + 1];
+// static uint8_t buf[CONFIG_TINYUSB_CDC_RX_BUFSIZE + 1];
 
 /* TinyUSB descriptors
    ********************************************************************* */
@@ -99,8 +98,8 @@ static esp_err_t storage_init_spiflash(wl_handle_t *wl_handle);
 static void storage_mount_changed_cb(tinyusb_msc_event_t *event);
 static void msc_mount(void);
 // static void msc_unmount(void);
-static void tinyusb_cdc_rx_callback(int itf, cdcacm_event_t *event);
-static void tinyusb_cdc_line_state_changed_callback(int itf, cdcacm_event_t *event);
+// static void tinyusb_cdc_rx_callback(int itf, cdcacm_event_t *event);
+// static void tinyusb_cdc_line_state_changed_callback(int itf, cdcacm_event_t *event);
 
 #include <fcntl.h>
 #include "vfs_tinyusb.h"
@@ -137,30 +136,46 @@ esp_err_t usb_init(void)
     };
     ESP_ERROR_CHECK(tinyusb_driver_install(&tusb_cfg));
 
-    tinyusb_config_cdcacm_t acm_cfg = {
-        .usb_dev = TINYUSB_USBDEV_0,
-        .cdc_port = TINYUSB_CDC_ACM_0,
-        .rx_unread_buf_sz = 64,
-        .callback_rx = &tinyusb_cdc_rx_callback,
-        .callback_rx_wanted_char = NULL,
-        .callback_line_state_changed = NULL,
-        .callback_line_coding_changed = NULL
-    };
+    // tinyusb_config_cdcacm_t acm_cfg = {
+    //     .usb_dev = TINYUSB_USBDEV_0,
+    //     .cdc_port = TINYUSB_CDC_ACM_0,
+    //     .rx_unread_buf_sz = 64,
+    //     .callback_rx = &tinyusb_cdc_rx_callback,
+    //     .callback_rx_wanted_char = NULL,
+    //     .callback_line_state_changed = NULL,
+    //     .callback_line_coding_changed = NULL
+    // };
+    //
+    // ESP_ERROR_CHECK(tusb_cdc_acm_init(&acm_cfg));
+    // /* the second way to register a callback */
+    // ESP_ERROR_CHECK(tinyusb_cdcacm_register_callback(
+    //                     TINYUSB_CDC_ACM_0,
+    //                     CDC_EVENT_LINE_STATE_CHANGED,
+    //                     &tinyusb_cdc_line_state_changed_callback));
+    // ESP_LOGI(TAG, "USB Composite initialization DONE");
+    //
+    // esp_tusb_init_console(TINYUSB_CDC_ACM_0);
+    //
+    // /* Minicom, screen, idf_monitor send CR when ENTER key is pressed */
+    // esp_vfs_tusb_cdc_set_rx_line_endings(ESP_LINE_ENDINGS_CR);
+    // /* Move the caret to the beginning of the next line on '\n' */
+    // esp_vfs_tusb_cdc_set_tx_line_endings(ESP_LINE_ENDINGS_LF);
 
-    ESP_ERROR_CHECK(tusb_cdc_acm_init(&acm_cfg));
-    /* the second way to register a callback */
-    ESP_ERROR_CHECK(tinyusb_cdcacm_register_callback(
-                        TINYUSB_CDC_ACM_0,
-                        CDC_EVENT_LINE_STATE_CHANGED,
-                        &tinyusb_cdc_line_state_changed_callback));
-    ESP_LOGI(TAG, "USB Composite initialization DONE");
+    ESP_LOGI("main", "free_internal_heap_size = %ldKB", esp_get_free_internal_heap_size() / 1024);
+    ESP_LOGI("main", "free_heap_size = %ldKB", esp_get_free_heap_size() / 1024);
 
-    esp_tusb_init_console(TINYUSB_CDC_ACM_0);
+    return ESP_OK;
+}
 
-    /* Minicom, screen, idf_monitor send CR when ENTER key is pressed */
-    esp_vfs_tusb_cdc_set_rx_line_endings(ESP_LINE_ENDINGS_CR);
-    /* Move the caret to the beginning of the next line on '\n' */
-    esp_vfs_tusb_cdc_set_tx_line_endings(ESP_LINE_ENDINGS_LF);
+esp_err_t usb_deinit(void)
+{
+    ESP_LOGI(TAG, "USB Composite deinitialization");
+    ESP_ERROR_CHECK(tinyusb_driver_uninstall());
+    tusb_stop_task();
+    ESP_LOGI(TAG, "USB Composite deinitialization DONE");
+
+    ESP_LOGI("main", "free_internal_heap_size = %ldKB", esp_get_free_internal_heap_size() / 1024);
+    ESP_LOGI("main", "free_heap_size = %ldKB", esp_get_free_heap_size() / 1024);
 
     return ESP_OK;
 }
@@ -220,28 +235,28 @@ static void msc_mount(void)
 //     ESP_ERROR_CHECK(tinyusb_msc_storage_unmount());
 // }
 
-static void tinyusb_cdc_rx_callback(int itf, cdcacm_event_t *event)
-{
-    /* initialization */
-    size_t rx_size = 0;
-
-    /* read */
-    esp_err_t ret = tinyusb_cdcacm_read(itf, buf, CONFIG_TINYUSB_CDC_RX_BUFSIZE, &rx_size);
-    if (ret == ESP_OK) {
-        ESP_LOGI(TAG, "Data from channel %d:", itf);
-        ESP_LOG_BUFFER_HEXDUMP(TAG, buf, rx_size, ESP_LOG_INFO);
-    } else {
-        ESP_LOGE(TAG, "Read error");
-    }
-
-    /* write back */
-    tinyusb_cdcacm_write_queue(itf, buf, rx_size);
-    tinyusb_cdcacm_write_flush(itf, 0);
-}
-
-static void tinyusb_cdc_line_state_changed_callback(int itf, cdcacm_event_t *event)
-{
-    int dtr = event->line_state_changed_data.dtr;
-    int rts = event->line_state_changed_data.rts;
-    ESP_LOGI(TAG, "Line state changed on channel %d: DTR:%d, RTS:%d", itf, dtr, rts);
-}
+// static void tinyusb_cdc_rx_callback(int itf, cdcacm_event_t *event)
+// {
+//     /* initialization */
+//     size_t rx_size = 0;
+//
+//     /* read */
+//     esp_err_t ret = tinyusb_cdcacm_read(itf, buf, CONFIG_TINYUSB_CDC_RX_BUFSIZE, &rx_size);
+//     if (ret == ESP_OK) {
+//         ESP_LOGI(TAG, "Data from channel %d:", itf);
+//         ESP_LOG_BUFFER_HEXDUMP(TAG, buf, rx_size, ESP_LOG_INFO);
+//     } else {
+//         ESP_LOGE(TAG, "Read error");
+//     }
+//
+//     /* write back */
+//     tinyusb_cdcacm_write_queue(itf, buf, rx_size);
+//     tinyusb_cdcacm_write_flush(itf, 0);
+// }
+//
+// static void tinyusb_cdc_line_state_changed_callback(int itf, cdcacm_event_t *event)
+// {
+//     int dtr = event->line_state_changed_data.dtr;
+//     int rts = event->line_state_changed_data.rts;
+//     ESP_LOGI(TAG, "Line state changed on channel %d: DTR:%d, RTS:%d", itf, dtr, rts);
+// }

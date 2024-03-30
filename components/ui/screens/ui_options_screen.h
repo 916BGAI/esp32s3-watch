@@ -10,6 +10,7 @@ enum options_app {
     NO_APP,
     Brightness,
     WiFi,
+    USB,
 };
 
 typedef struct {
@@ -23,12 +24,10 @@ typedef struct {
         lv_obj_t *top;
         lv_obj_t *brightness;
         lv_obj_t *wifi;
+        lv_obj_t *usb;
     } label;
 
-    struct {
-        lv_obj_t *ret;
-        lv_obj_t *save;
-    } button;
+    lv_obj_t * ret_button;
 
 } options_screen_t;
 

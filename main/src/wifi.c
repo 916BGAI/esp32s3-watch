@@ -6,16 +6,37 @@
 #include "esp_wifi.h"
 #include "esp_event.h"
 #include "esp_log.h"
+#include "nvs_flash.h"
 #include "wifi.h"
 
 #define MAXIMUM_RETRY  5
 #define WIFI_CONNECTED_BIT BIT0
 #define WIFI_FAIL_BIT      BIT1
 
+typedef struct {
+    const char *namespace;
+    nvs_handle_t handle;
+
+    struct {
+        const char *status;
+    } key;
+
+    uint32_t status;
+} wifi_info_t;
+
 static uint8_t wifi_ssid[32] = "Redmi";
 static uint8_t wifi_pass[64] = "20011201ABCabc";
 static EventGroupHandle_t s_wifi_event_group;
 static const char *TAG = "WIFI";
+
+static wifi_info_t wifi_info = {
+    .namespace = "wifi",
+    .handle = 0,
+    .key = {
+        .status = "status",
+    },
+    .status = false,
+};
 
 static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
 {
@@ -40,7 +61,7 @@ static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_
     }
 }
 
-void wifi_init(void)
+esp_err_t wifi_init(void)
 {
     s_wifi_event_group = xEventGroupCreate();
 
@@ -77,4 +98,39 @@ void wifi_init(void)
     } else {
         ESP_LOGE(TAG, "UNEXPECTED EVENT");
     }
+
+    return ESP_OK;
+}
+
+esp_err_t wifi_info_save_to_nvs(void)
+{
+    nvs_open(wifi_info.namespace, NVS_READWRITE, &wifi_info.handle);
+    nvs_set_u32(wifi_info.handle, wifi_info.key.status, wifi_info.status);
+    nvs_commit(wifi_info.handle);
+    nvs_close(wifi_info.handle);
+    return ESP_OK;
+}
+
+esp_err_t wifi_info_obtain_from_nvs(void)
+{
+    nvs_open(wifi_info.namespace, NVS_READONLY, &wifi_info.handle);
+    const esp_err_t err = nvs_get_u32(wifi_info.handle, wifi_info.key.status, &wifi_info.status);
+    nvs_close(wifi_info.handle);
+    if (err == ESP_ERR_NVS_NOT_FOUND) {
+        ESP_LOGE("WIFI", "Can't find wifi from nvs");
+        return ESP_FAIL;
+    } else {
+        return ESP_OK;
+    }
+}
+
+esp_err_t wifi_info_set_status(const uint32_t status)
+{
+    wifi_info.status = status;
+    return ESP_OK;
+}
+
+uint32_t wifi_info_get_status(void)
+{
+    return wifi_info.status;
 }

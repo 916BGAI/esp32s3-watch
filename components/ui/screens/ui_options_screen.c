@@ -3,13 +3,15 @@
 #include "ui_menu_screen.h"
 #include "ui_brightness_app.h"
 #include "ui_wifi_app.h"
+#include "ui_usb_app.h"
 #include "ui_options_screen.h"
 #include "esp_lvgl_port.h"
 #include "display.h"
+#include "wifi.h"
 
 static options_screen_t *options_screen;
 
-static void return_save_button_event_callback(lv_event_t *e);
+static void return_button_event_callback(lv_event_t *e);
 static void ui_event_options_screen(lv_event_t *e);
 
 void ui_options_screen_init(void)
@@ -31,23 +33,14 @@ void ui_options_screen_init(void)
     lv_label_set_text(options_screen->label.top, "设 置");
     lv_obj_align(options_screen->label.top, LV_ALIGN_CENTER, 0, 0);
 
-    options_screen->button.ret = lv_btn_create(options_screen->top_contanier);
-    lv_obj_t *return_button_label = lv_label_create(options_screen->button.ret);
-    lv_obj_set_size(options_screen->button.ret, 39, 27);
-    lv_obj_align(options_screen->button.ret, LV_ALIGN_LEFT_MID, -25, 0);
+    options_screen->ret_button = lv_btn_create(options_screen->top_contanier);
+    lv_obj_t *return_button_label = lv_label_create(options_screen->ret_button);
+    lv_obj_set_size(options_screen->ret_button, 39, 27);
+    lv_obj_align(options_screen->ret_button, LV_ALIGN_LEFT_MID, -25, 0);
     lv_label_set_text(return_button_label, "返回");
     lv_obj_center(return_button_label);
-    lv_obj_add_event_cb(options_screen->button.ret, return_save_button_event_callback, LV_EVENT_CLICKED, NULL);
-    lv_obj_add_flag(options_screen->button.ret, LV_OBJ_FLAG_HIDDEN);
-
-    options_screen->button.save = lv_btn_create(options_screen->top_contanier);
-    lv_obj_t *save_button_label = lv_label_create(options_screen->button.save);
-    lv_obj_set_size(options_screen->button.save, 39, 27);
-    lv_obj_align(options_screen->button.save, LV_ALIGN_RIGHT_MID, 25, 0);
-    lv_label_set_text(save_button_label, "保存");
-    lv_obj_center(save_button_label);
-    lv_obj_add_event_cb(options_screen->button.save, return_save_button_event_callback, LV_EVENT_CLICKED, NULL);
-    lv_obj_add_flag(options_screen->button.save, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_event_cb(options_screen->ret_button, return_button_event_callback, LV_EVENT_CLICKED, NULL);
+    lv_obj_add_flag(options_screen->ret_button, LV_OBJ_FLAG_HIDDEN);
 
     options_screen->list = lv_list_create(options_screen->screen);
     lv_obj_set_size(options_screen->list, 240, 240);
@@ -63,7 +56,18 @@ void ui_options_screen_init(void)
     lv_obj_add_event_cb(btn, wifi_event_callback, LV_EVENT_CLICKED, options_screen);
     options_screen->label.wifi = lv_label_create(btn);
     lv_obj_set_style_text_font(options_screen->label.wifi, SarasaMonoR_18, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_label_set_text(options_screen->label.wifi, "关");
+    wifi_info_obtain_from_nvs();
+    if (wifi_info_get_status() == true) {
+        lv_label_set_text(options_screen->label.wifi, "开");
+    } else {
+        lv_label_set_text(options_screen->label.wifi, "关");
+    }
+
+    btn = lv_list_add_btn(options_screen->list, UI_SYMBOL_USB, "USB 调试");
+    lv_obj_add_event_cb(btn, usb_event_callback, LV_EVENT_CLICKED, options_screen);
+    options_screen->label.usb = lv_label_create(btn);
+    lv_obj_set_style_text_font(options_screen->label.usb, SarasaMonoR_18, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_label_set_text(options_screen->label.usb, "关");
 
     lv_style_init(&options_screen->style);
     lv_style_set_border_width(&options_screen->style, 0);
@@ -76,29 +80,21 @@ void ui_options_screen_init(void)
 
 extern brightness_app_t *brightness_app;
 
-void return_save_button_event_callback(lv_event_t *e)
+void return_button_event_callback(lv_event_t *e)
 {
-    const lv_obj_t *target = lv_event_get_target(e);
+    switch (options_screen->app) {
+    case Brightness:
+        display_brightness_save_to_nvs();
+        lv_label_set_text_fmt(options_screen->label.brightness, "%lu%%", display_brightness_get());
+        break;
+    case WiFi:
 
-    if (target == options_screen->button.save) {
-        switch (options_screen->app) {
-        case Brightness:
-            const uint32_t brightness_percent = lv_slider_get_value(brightness_app->slider);
-            lvgl_port_lock(0);
-            display_brightness_set(brightness_percent);
-            lv_label_set_text_fmt(options_screen->label.brightness, "%lu%%", brightness_percent);
-            lvgl_port_unlock();
-            break;
-        case WiFi:
-
-            break;
-        default:
-            break;
-        }
+        break;
+    default:
+        break;
     }
 
-    lv_obj_add_flag(options_screen->button.ret, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_add_flag(options_screen->button.save, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_add_flag(options_screen->ret_button, LV_OBJ_FLAG_HIDDEN);
     lv_label_set_text(options_screen->label.top, "设 置");
     lv_obj_load_anim(options_screen->label.top, options_screen->label.top, LV_SCR_LOAD_ANIM_FADE_IN, 200, 100);
     lv_obj_load_anim(options_screen->list, brightness_app->contanier, LV_SCR_LOAD_ANIM_OVER_RIGHT, 200, 100);

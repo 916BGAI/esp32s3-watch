@@ -14,6 +14,10 @@ static void slider_event_cb(lv_event_t *e)
                 (int)lv_slider_get_value(brightness_app->slider));
     lv_label_set_text(brightness_app->slider_label, brightness_app->slider_label_buf);
     lv_obj_align_to(brightness_app->slider_label, brightness_app->slider, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
+
+    lvgl_port_lock(0);
+    display_brightness_set(lv_slider_get_value(brightness_app->slider));
+    lvgl_port_unlock();
 }
 
 void brightness_event_callback(lv_event_t *e)
@@ -32,11 +36,9 @@ void brightness_event_callback(lv_event_t *e)
     lv_label_set_text(options_screen->label.top, "屏幕亮度");
     lv_obj_load_anim(options_screen->label.top, options_screen->label.top, LV_SCR_LOAD_ANIM_FADE_IN, 200, 100);
 
-    lv_obj_clear_flag(options_screen->button.ret, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_clear_flag(options_screen->button.save, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_load_anim(options_screen->button.ret, options_screen->button.ret, LV_SCR_LOAD_ANIM_OVER_RIGHT, 200,
+    lv_obj_clear_flag(options_screen->ret_button, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_load_anim(options_screen->ret_button, options_screen->ret_button, LV_SCR_LOAD_ANIM_OVER_RIGHT, 200,
                      100);
-    lv_obj_load_anim(options_screen->button.save, options_screen->button.save, LV_SCR_LOAD_ANIM_OVER_LEFT, 200, 100);
 
     /*Create a transition*/
     static const lv_style_prop_t props[] = { LV_STYLE_BG_COLOR, 0 };
@@ -69,6 +71,7 @@ void brightness_event_callback(lv_event_t *e)
 
     /*Create a slider and add the style*/
     brightness_app->slider = lv_slider_create(brightness_app->contanier);
+    lv_slider_set_range(brightness_app->slider, 1, 100);
     lv_obj_remove_style_all(brightness_app->slider); /*Remove the styles coming from the theme*/
     lv_obj_set_size(brightness_app->slider, 170, 17);
     lv_obj_center(brightness_app->slider);

@@ -5,6 +5,9 @@ extern "C" {
 #endif
 
 #include "lvgl.h"
+#include "driver/gpio.h"
+#include "esp_err.h"
+#include "display.h"
 
 /* Display */
 #define LCD_PCLK                (GPIO_NUM_18)
@@ -22,14 +25,17 @@ extern "C" {
 #define LCD_V_RES               (280)
 #define LCD_PIXEL_CLOCK_HZ      (80 * 1000 * 1000)
 #define LCD_SPI_NUM             (SPI2_HOST)
-#define LCD_DRAW_BUF_HEIGHT     140
+#define LCD_DRAW_BUF_HEIGHT     130
 
 /* LCD display color bits */
 #define LCD_BITS_PER_PIXEL      (16)
 
-esp_err_t display_brightness_set(uint32_t brightness_percent);
-uint32_t display_brightness_get(void);
 lv_disp_t *display_init(void);
+
+esp_err_t display_brightness_set(uint32_t brightness_percent);
+esp_err_t display_brightness_save_to_nvs(void);
+uint32_t display_brightness_get(void);
+esp_err_t display_brightness_obtain_from_nvs(void);
 
 static inline esp_err_t display_backlight_off(void)
 {
