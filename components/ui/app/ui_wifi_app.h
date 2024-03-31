@@ -20,8 +20,14 @@ typedef struct {
         lv_obj_t *label;
     } saved;
 
+    struct {
+        lv_obj_t *contanier;
+        lv_obj_t *label;
+    } add;
+
     lv_obj_t *text1;
     lv_obj_t *text2;
+    lv_obj_t *text3;
 
 } wifi_app_t;
 

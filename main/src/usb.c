@@ -161,9 +161,6 @@ esp_err_t usb_init(void)
     // /* Move the caret to the beginning of the next line on '\n' */
     // esp_vfs_tusb_cdc_set_tx_line_endings(ESP_LINE_ENDINGS_LF);
 
-    ESP_LOGI("main", "free_internal_heap_size = %ldKB", esp_get_free_internal_heap_size() / 1024);
-    ESP_LOGI("main", "free_heap_size = %ldKB", esp_get_free_heap_size() / 1024);
-
     return ESP_OK;
 }
 
@@ -173,9 +170,6 @@ esp_err_t usb_deinit(void)
     ESP_ERROR_CHECK(tinyusb_driver_uninstall());
     tusb_stop_task();
     ESP_LOGI(TAG, "USB Composite deinitialization DONE");
-
-    ESP_LOGI("main", "free_internal_heap_size = %ldKB", esp_get_free_internal_heap_size() / 1024);
-    ESP_LOGI("main", "free_heap_size = %ldKB", esp_get_free_heap_size() / 1024);
 
     return ESP_OK;
 }

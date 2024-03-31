@@ -73,7 +73,7 @@ void ui_options_screen_init(void)
     lv_style_set_border_width(&options_screen->style, 0);
     lv_obj_add_style(options_screen->list, &options_screen->style, 0);
 
-    lv_obj_add_event_cb(options_screen->screen, ui_event_options_screen, LV_EVENT_ALL, options_screen);
+    lv_obj_add_event_cb(options_screen->screen, ui_event_options_screen, LV_EVENT_ALL, NULL);
 
     lv_scr_load_anim(options_screen->screen, LV_SCR_LOAD_ANIM_FADE_ON, 300, 0, true);
 }
