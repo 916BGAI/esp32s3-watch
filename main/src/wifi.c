@@ -19,9 +19,16 @@ typedef struct {
 
     struct {
         const char *status;
+        const char *ssid;
+        const char *password;
+        const char *authmode;
     } key;
 
-    uint32_t status;
+    bool status;
+    uint8_t ssid[32];
+    uint8_t password[64];
+    wifi_auth_mode_t authmode;
+
 } wifi_info_t;
 
 static uint8_t wifi_ssid[32] = "Redmi";
@@ -34,8 +41,10 @@ static wifi_info_t wifi_info = {
     .handle = 0,
     .key = {
         .status = "status",
+        .ssid = "ssid",
+        .password = "password",
+        .authmode = "authmode",
     },
-    .status = false,
 };
 
 static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
@@ -80,7 +89,7 @@ esp_err_t wifi_init(void)
     wifi_config_t wifi_config = { 0 };
     memcpy(wifi_config.sta.ssid, wifi_ssid, 32);
     memcpy(wifi_config.sta.password, wifi_pass, 64);
-    wifi_config.sta.threshold.authmode = WIFI_AUTH_WPA2_PSK;
+    wifi_config.sta.threshold.authmode = WIFI_AUTH_WPA_WPA2_PSK;
 
     esp_wifi_set_mode(WIFI_MODE_STA);
     esp_wifi_set_config(WIFI_IF_STA, &wifi_config);
@@ -92,9 +101,9 @@ esp_err_t wifi_init(void)
         xEventGroupWaitBits(s_wifi_event_group, WIFI_CONNECTED_BIT | WIFI_FAIL_BIT, pdFALSE, pdFALSE, portMAX_DELAY);
 
     if (bits & WIFI_CONNECTED_BIT) {
-        ESP_LOGI(TAG, "connected to ap SSID:%s password:%s", wifi_ssid, wifi_pass);
+        ESP_LOGI(TAG, "connected to ap SSID:%s password:%s", (char *)wifi_ssid, (char *)wifi_pass);
     } else if (bits & WIFI_FAIL_BIT) {
-        ESP_LOGI(TAG, "Failed to connect to SSID:%s, password:%s", wifi_ssid, wifi_pass);
+        ESP_LOGI(TAG, "Failed to connect to SSID:%s, password:%s", (char *)wifi_ssid, (char *)wifi_pass);
     } else {
         ESP_LOGE(TAG, "UNEXPECTED EVENT");
     }
@@ -106,6 +115,9 @@ esp_err_t wifi_info_save_to_nvs(void)
 {
     nvs_open(wifi_info.namespace, NVS_READWRITE, &wifi_info.handle);
     nvs_set_u32(wifi_info.handle, wifi_info.key.status, wifi_info.status);
+    nvs_set_str(wifi_info.handle, wifi_info.key.ssid, (const char *)wifi_info.ssid);
+    nvs_set_str(wifi_info.handle, wifi_info.key.password, (const char *)wifi_info.password);
+    nvs_set_u32(wifi_info.handle, wifi_info.key.authmode, wifi_info.authmode);
     nvs_commit(wifi_info.handle);
     nvs_close(wifi_info.handle);
     return ESP_OK;
@@ -113,18 +125,18 @@ esp_err_t wifi_info_save_to_nvs(void)
 
 esp_err_t wifi_info_obtain_from_nvs(void)
 {
+    size_t ssid_size = 32;
+    size_t pwd_size = 64;
     nvs_open(wifi_info.namespace, NVS_READONLY, &wifi_info.handle);
-    const esp_err_t err = nvs_get_u32(wifi_info.handle, wifi_info.key.status, &wifi_info.status);
+    ESP_ERROR_CHECK(nvs_get_u32(wifi_info.handle, wifi_info.key.status, (uint32_t *)&wifi_info.status));
+    ESP_ERROR_CHECK(nvs_get_str(wifi_info.handle, wifi_info.key.ssid, (char *)wifi_info.ssid, &ssid_size));
+    ESP_ERROR_CHECK(nvs_get_str(wifi_info.handle, wifi_info.key.password, (char *)wifi_info.password, &pwd_size));
+    ESP_ERROR_CHECK(nvs_get_u32(wifi_info.handle, wifi_info.key.authmode, (uint32_t *)&wifi_info.authmode));
     nvs_close(wifi_info.handle);
-    if (err == ESP_ERR_NVS_NOT_FOUND) {
-        ESP_LOGE("WIFI", "Can't find wifi from nvs");
-        return ESP_FAIL;
-    } else {
-        return ESP_OK;
-    }
+    return ESP_OK;
 }
 
-esp_err_t wifi_info_set_status(const uint32_t status)
+esp_err_t wifi_info_set_status(const bool status)
 {
     wifi_info.status = status;
     return ESP_OK;
@@ -133,4 +145,46 @@ esp_err_t wifi_info_set_status(const uint32_t status)
 uint32_t wifi_info_get_status(void)
 {
     return wifi_info.status;
+}
+
+esp_err_t wifi_info_save_status_to_nvs(void)
+{
+    nvs_open(wifi_info.namespace, NVS_READWRITE, &wifi_info.handle);
+    nvs_set_u32(wifi_info.handle, wifi_info.key.status, wifi_info.status);
+    nvs_commit(wifi_info.handle);
+    nvs_close(wifi_info.handle);
+    return ESP_OK;
+}
+
+esp_err_t wifi_info_set_ssid(const uint8_t *ssid)
+{
+    memcpy(wifi_info.ssid, ssid, 32);
+    return ESP_OK;
+}
+
+const uint8_t * wifi_info_get_ssid(void)
+{
+    return wifi_info.ssid;
+}
+
+esp_err_t wifi_info_set_pwd(const uint8_t *password)
+{
+    memcpy(wifi_info.password, password, 64);
+    return ESP_OK;
+}
+
+const uint8_t * wifi_info_get_pwd(void)
+{
+    return wifi_info.password;
+}
+
+esp_err_t wifi_info_set_authmode(const wifi_auth_mode_t authmode)
+{
+    wifi_info.authmode = authmode;
+    return ESP_OK;
+}
+
+wifi_auth_mode_t wifi_info_get_authmode(void)
+{
+    return wifi_info.authmode;
 }

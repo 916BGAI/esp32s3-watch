@@ -41,5 +41,9 @@ void app_main(void)
 
     for (;;) {
         vTaskDelay(1000 / portTICK_PERIOD_MS);
+        ESP_LOGI("wifi", "Status:%lu", wifi_info_get_status());
+        ESP_LOGI("wifi", "SSID:%s", (char *)wifi_info_get_ssid());
+        ESP_LOGI("wifi", "password:%s", (char *)wifi_info_get_pwd());
+        ESP_LOGI("wifi", "authmode:%d",wifi_info_get_authmode());
     }
 }

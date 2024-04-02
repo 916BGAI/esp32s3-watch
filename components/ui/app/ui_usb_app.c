@@ -15,7 +15,7 @@ static void ui_event_return(lv_event_t *e);
 void usb_event_callback(lv_event_t *e)
 {
     usb_app = malloc(sizeof(usb_app_t));
-    options_screen_t *options_screen = e->user_data;
+    options_screen_t *options_screen = lv_event_get_user_data(e);
 
     options_screen->app = USB;
 
@@ -56,7 +56,7 @@ void usb_event_callback(lv_event_t *e)
 
 static void sw_event_cb(lv_event_t *e)
 {
-    options_screen_t *options_screen = e->user_data;
+    options_screen_t *options_screen = lv_event_get_user_data(e);
     const lv_event_code_t code = lv_event_get_code(e);
     lv_obj_t * obj = lv_event_get_target(e);
 
@@ -78,7 +78,7 @@ static void sw_event_cb(lv_event_t *e)
 static void ui_event_return(lv_event_t *e)
 {
     const lv_event_code_t event_code = lv_event_get_code(e);
-    options_screen_t *options_screen = e->user_data;
+    options_screen_t *options_screen = lv_event_get_user_data(e);
 
     if (event_code == LV_EVENT_GESTURE && lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_RIGHT &&
         options_screen->app == USB) {

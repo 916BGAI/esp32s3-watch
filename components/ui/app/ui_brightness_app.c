@@ -23,7 +23,7 @@ static void slider_event_cb(lv_event_t *e)
 void brightness_event_callback(lv_event_t *e)
 {
     brightness_app = malloc(sizeof(brightness_app_t));
-    options_screen_t *options_screen = e->user_data;
+    options_screen_t *options_screen = lv_event_get_user_data(e);
 
     options_screen->app = Brightness;
 

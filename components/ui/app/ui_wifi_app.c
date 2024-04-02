@@ -2,6 +2,7 @@
 #include "ui_helpers.h"
 #include "ui_options_screen.h"
 #include "ui_wifi_app.h"
+#include "esp_wifi.h"
 #include "wifi.h"
 
 wifi_app_t *wifi_app;
@@ -11,15 +12,18 @@ static void saved_event_cb(lv_event_t *e);
 static void saved_msgbox_event_cb(lv_event_t *e);
 static void add_event_cb(lv_event_t *e);
 static void add_msgbox_event_cb(lv_event_t *e);
-static void name_ta_event_cb(lv_event_t * e);
+static void add_msgbox_ta_event_cb(lv_event_t * e);
+static void add_msgbox_dropdown_event_cb(lv_event_t * e);
+static void add_msgbox_btn_event_cb(lv_event_t *e);
 static void ui_event_return(lv_event_t *e);
 
 void wifi_event_callback(lv_event_t *e)
 {
     wifi_app = malloc(sizeof(wifi_app_t));
-    options_screen_t *options_screen = e->user_data;
+    options_screen_t *options_screen = lv_event_get_user_data(e);
 
     options_screen->app = WiFi;
+    wifi_info_obtain_from_nvs();
 
     lv_obj_add_flag(options_screen->list, LV_OBJ_FLAG_HIDDEN);
     wifi_app->contanier = lv_obj_create(options_screen->screen);
@@ -69,6 +73,11 @@ void wifi_event_callback(lv_event_t *e)
     lv_obj_set_style_bg_color(wifi_app->saved.contanier, lv_color_hex(0xD5DAF9), 0);
     wifi_app->saved.label = lv_label_create(wifi_app->saved.contanier);
     lv_obj_set_style_text_font(wifi_app->saved.label, SarasaMonoB_18, LV_PART_MAIN | LV_STATE_DEFAULT);
+    if (strlen((char *)wifi_info_get_ssid()) == 0) {
+        lv_label_set_text(wifi_app->saved.label, "无");
+    } else {
+        lv_label_set_text_fmt(wifi_app->saved.label, "%s", wifi_info_get_ssid());
+    }
     lv_obj_align(wifi_app->saved.label, LV_ALIGN_CENTER, 0, 0);
     lv_obj_add_event_cb(wifi_app->saved.contanier, saved_event_cb, LV_EVENT_ALL, NULL);
 
@@ -107,7 +116,7 @@ void wifi_event_callback(lv_event_t *e)
 
 static void sw_event_cb(lv_event_t *e)
 {
-    options_screen_t *options_screen = e->user_data;
+    options_screen_t *options_screen = lv_event_get_user_data(e);
     const lv_event_code_t code = lv_event_get_code(e);
 
     lv_obj_t * obj = lv_event_get_target(e);
@@ -161,7 +170,6 @@ static void add_event_cb(lv_event_t *e)
         static const char * btns[] ={""};
         lv_obj_t * mbox = lv_msgbox_create(NULL, "添加网络", "", btns, true);
         lv_obj_set_style_text_font(mbox, SarasaMonoR_18, LV_PART_MAIN | LV_STATE_DEFAULT);
-        lv_obj_add_event_cb(mbox, add_msgbox_event_cb, LV_EVENT_VALUE_CHANGED, NULL);
         lv_obj_center(mbox);
         lv_obj_set_size(mbox, 200, 200);
 
@@ -171,47 +179,171 @@ static void add_event_cb(lv_event_t *e)
         lv_obj_align(name_label, LV_ALIGN_TOP_RIGHT, 0, 0);
 
         /*Create the one-line mode text area*/
-        lv_obj_t * name_ta = lv_textarea_create(mbox);
-        lv_textarea_set_one_line(name_ta, true);
-        lv_textarea_set_password_mode(name_ta, false);
-        lv_obj_set_width(name_ta, lv_pct(90));
-        lv_obj_align_to(name_ta, name_label, LV_ALIGN_OUT_BOTTOM_LEFT, 2, 0);
+        lv_obj_t * ssid_ta = lv_textarea_create(mbox);
+        lv_textarea_set_one_line(ssid_ta, true);
+        lv_textarea_set_password_mode(ssid_ta, false);
+        lv_textarea_set_placeholder_text(ssid_ta, "网络名称：");
+        lv_obj_set_width(ssid_ta, lv_pct(90));
+        lv_obj_align_to(ssid_ta, name_label, LV_ALIGN_OUT_BOTTOM_LEFT, 0, -2);
+
+        lv_obj_t * safe_label = lv_label_create(mbox);
+        lv_obj_set_style_text_font(safe_label, SarasaMonoR_18, LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_label_set_text(safe_label, "安全性：");
+        lv_obj_align(safe_label, LV_ALIGN_TOP_RIGHT, 0, 9);
+
+        /*Create a normal drop down list*/
+        lv_obj_t * dd = lv_dropdown_create(mbox);
+        lv_obj_set_width(dd, lv_pct(90));
+        lv_obj_set_style_text_font(dd, SarasaMonoR_18, LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_dropdown_set_options(dd, "Open\n"
+                                    "WEP\n"
+                                    "WPA/WPA2-PSK\n"
+                                    "WPA/WPA2-EAP\n"
+                                    "WPA3-PSK");
+        lv_obj_align_to(dd, safe_label, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 2);
+        lv_obj_add_event_cb(dd, add_msgbox_dropdown_event_cb, LV_EVENT_ALL, NULL);
+
+        lv_obj_t * pwd_label = lv_label_create(mbox);
+        lv_obj_set_style_text_font(pwd_label, SarasaMonoR_18, LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_label_set_text(pwd_label, "密码：");
+        lv_obj_align(pwd_label, LV_ALIGN_TOP_RIGHT, 0, 0);
+        lv_obj_add_flag(pwd_label, LV_OBJ_FLAG_HIDDEN);
+
+        lv_obj_t * pwd_ta = lv_textarea_create(mbox);
+        lv_textarea_set_text(pwd_ta, "");
+        lv_textarea_set_password_mode(pwd_ta, true);
+        lv_textarea_set_one_line(pwd_ta, true);
+        lv_textarea_set_placeholder_text(pwd_ta, "密码：");
+        lv_obj_set_width(pwd_ta, lv_pct(90));
+        lv_obj_align_to(pwd_ta, pwd_label, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 0);
+        lv_obj_add_flag(pwd_ta, LV_OBJ_FLAG_HIDDEN);
 
         /*Create a keyboard*/
-        lv_obj_t * kb = lv_keyboard_create(mbox);
-        lv_obj_set_size(kb,  LV_HOR_RES, LV_VER_RES / 2);
-        lv_keyboard_set_textarea(kb, name_ta); /*Focus it on one of the text areas to start*/
+        lv_obj_t * kb = lv_keyboard_create(lv_layer_top());
+        lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_event_cb(ssid_ta, add_msgbox_ta_event_cb, LV_EVENT_ALL, kb);
+        lv_obj_add_event_cb(pwd_ta, add_msgbox_ta_event_cb, LV_EVENT_ALL, kb);
+        lv_obj_add_event_cb(mbox, add_msgbox_event_cb, LV_EVENT_DELETE, kb);
 
-        lv_obj_add_event_cb(name_ta, name_ta_event_cb, LV_EVENT_ALL, kb);
+        lv_obj_t *btn_save = lv_btn_create(mbox);
+        lv_obj_add_event_cb(btn_save, add_msgbox_btn_event_cb, LV_EVENT_CLICKED, NULL);
+        lv_obj_align(btn_save, LV_ALIGN_TOP_MID, -40, 15);
+
+        lv_obj_t * label = lv_label_create(btn_save);
+        lv_obj_set_style_text_font(label, SarasaMonoR_18, LV_PART_MAIN | LV_STATE_DEFAULT);
+        lv_label_set_text(label, "保存");
+        lv_obj_center(label);
+
+        lv_obj_t *btn_link = lv_btn_create(mbox);
+        lv_obj_add_event_cb(btn_link, add_msgbox_btn_event_cb, LV_EVENT_CLICKED, NULL);
+        lv_obj_align(btn_link, LV_ALIGN_TOP_MID, 40, 15);
+        lv_obj_set_height(btn_link, LV_SIZE_CONTENT);
+
+        label = lv_label_create(btn_link);
+        lv_label_set_text(label, "连接");
+        lv_obj_center(label);
     }
 }
 
-static void name_ta_event_cb(lv_event_t * e)
+static void add_msgbox_ta_event_cb(lv_event_t * e)
 {
     lv_event_code_t code = lv_event_get_code(e);
     lv_obj_t * ta = lv_event_get_target(e);
-    lv_obj_t * kb = e->user_data;
+    lv_obj_t * kb = lv_event_get_user_data(e);
+    if(code == LV_EVENT_FOCUSED) {
+        if(lv_indev_get_type(lv_indev_get_act()) != LV_INDEV_TYPE_KEYPAD) {
+            lv_keyboard_set_textarea(kb, ta);
+            lv_obj_set_style_max_height(kb, LV_HOR_RES * 2 / 3, 0);
+            lv_obj_clear_flag(kb, LV_OBJ_FLAG_HIDDEN);
+            lv_obj_scroll_to_view_recursive(ta, LV_ANIM_OFF);
+        }
+    }
+    else if(code == LV_EVENT_DEFOCUSED) {
+        lv_keyboard_set_textarea(kb, NULL);
+        lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
+        lv_indev_reset(NULL, ta);
+    }
+    else if(code == LV_EVENT_READY || code == LV_EVENT_CANCEL) {
+        lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_clear_state(ta, LV_STATE_FOCUSED);
+        lv_indev_reset(NULL, ta);   /*To forget the last clicked object to make it focusable again*/
+    }
+}
 
-    if(code == LV_EVENT_CLICKED || code == LV_EVENT_FOCUSED) {
-        /*Focus on the clicked text area*/
-        if(kb != NULL) lv_keyboard_set_textarea(kb, ta);
+static void add_msgbox_dropdown_event_cb(lv_event_t * e)
+{
+    const lv_event_code_t code = lv_event_get_code(e);
+    const lv_obj_t *target = lv_event_get_target(e);
+    const lv_obj_t *mbox = lv_obj_get_parent(target);
+    lv_obj_t *pwd_label = lv_obj_get_child(mbox, 8);
+    lv_obj_t *pwd_ta = lv_obj_get_child(mbox, 9);
+    if(code == LV_EVENT_VALUE_CHANGED) {
+        const uint16_t index = lv_dropdown_get_selected(target);
+        if (index) {
+            lv_obj_clear_flag(pwd_label, LV_OBJ_FLAG_HIDDEN);
+            lv_obj_clear_flag(pwd_ta, LV_OBJ_FLAG_HIDDEN);
+        } else {
+            lv_obj_add_flag(pwd_label, LV_OBJ_FLAG_HIDDEN);
+            lv_obj_add_flag(pwd_ta, LV_OBJ_FLAG_HIDDEN);
+        }
+    }
+}
+
+static void add_msgbox_btn_event_cb(lv_event_t *e)
+{
+    const lv_obj_t *target = lv_event_get_target(e);
+    const lv_obj_t *mbox = lv_obj_get_parent(target);
+    const lv_obj_t *ssid_ta = lv_obj_get_child(mbox, 5);
+    const lv_obj_t *dd = lv_obj_get_child(mbox, 7);
+    const lv_obj_t *pwd_ta = lv_obj_get_child(mbox, 9);
+    const lv_obj_t *btn_link = lv_obj_get_child(mbox, 11);
+
+    const uint8_t *ssid = (uint8_t *)lv_textarea_get_text(ssid_ta);
+    const uint8_t *password = (uint8_t *)lv_textarea_get_text(pwd_ta);
+    wifi_auth_mode_t authmode = WIFI_AUTH_OPEN;
+
+    switch (lv_dropdown_get_selected(dd)) {
+        case 0: authmode=WIFI_AUTH_OPEN; break;
+        case 1: authmode=WIFI_AUTH_WEP; break;
+        case 2: authmode=WIFI_AUTH_WPA_WPA2_PSK; break;
+        case 3: authmode=WIFI_AUTH_ENTERPRISE; break;
+        case 4: authmode=WIFI_AUTH_WPA3_PSK; break;
+        default: break;
     }
 
-    else if(code == LV_EVENT_READY) {
-        LV_LOG_USER("Ready, current text: %s", lv_textarea_get_text(ta));
+    if (authmode==WIFI_AUTH_OPEN) {
+        wifi_info_set_ssid(ssid);
+        wifi_info_set_pwd((uint8_t*)"");
+        wifi_info_set_authmode(WIFI_AUTH_OPEN);
+    } else {
+        wifi_info_set_ssid(ssid);
+        wifi_info_set_pwd(password);
+        wifi_info_set_authmode(authmode);
     }
+
+    wifi_info_save_status_to_nvs();
+    if (strlen((char *)wifi_info_get_ssid()) == 0) {
+        lv_label_set_text(wifi_app->saved.label, "无");
+    } else {
+        lv_label_set_text_fmt(wifi_app->saved.label, "%s", wifi_info_get_ssid());
+    }
+
+    if (target == btn_link) {
+
+    }
+
 }
 
 static void add_msgbox_event_cb(lv_event_t *e)
 {
-    lv_obj_t * obj = lv_event_get_current_target(e);
-    LV_LOG_USER("Button %s clicked", lv_msgbox_get_active_btn_text(obj));
+    lv_obj_t * kb = lv_event_get_user_data(e);
+    lv_obj_del_async(kb);
 }
 
 static void ui_event_return(lv_event_t *e)
 {
     const lv_event_code_t event_code = lv_event_get_code(e);
-    options_screen_t *options_screen = e->user_data;
+    options_screen_t *options_screen = lv_event_get_user_data(e);
 
     if (event_code == LV_EVENT_GESTURE && lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_RIGHT &&
         options_screen->app == WiFi) {
@@ -224,6 +356,6 @@ static void ui_event_return(lv_event_t *e)
         options_screen->app = NO_APP;
         free(wifi_app);
         lv_obj_clear_flag(options_screen->list, LV_OBJ_FLAG_HIDDEN);
-        wifi_info_save_to_nvs();
+        wifi_info_save_status_to_nvs();
     }
 }
