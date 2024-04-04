@@ -8,6 +8,9 @@ extern "C" {
 #include "esp_wifi.h"
 
 esp_err_t wifi_init(void);
+esp_err_t wifi_start(void);
+esp_err_t wifi_destroy(void);
+esp_err_t wifi_get_connected_status(const TickType_t xTicksToWait);
 esp_err_t wifi_info_save_to_nvs(void);
 esp_err_t wifi_info_obtain_from_nvs(void);
 esp_err_t wifi_info_set_status(const bool status);

@@ -13,6 +13,8 @@
 #define WIFI_CONNECTED_BIT BIT0
 #define WIFI_FAIL_BIT      BIT1
 
+static esp_netif_t *netif;
+
 typedef struct {
     const char *namespace;
     nvs_handle_t handle;
@@ -31,8 +33,6 @@ typedef struct {
 
 } wifi_info_t;
 
-static uint8_t wifi_ssid[32] = "Redmi";
-static uint8_t wifi_pass[64] = "20011201ABCabc";
 static EventGroupHandle_t s_wifi_event_group;
 static const char *TAG = "WIFI";
 
@@ -73,10 +73,14 @@ static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_
 esp_err_t wifi_init(void)
 {
     s_wifi_event_group = xEventGroupCreate();
+    return ESP_OK;
+}
 
+esp_err_t wifi_start(void)
+{
     esp_netif_init();
     esp_event_loop_create_default();
-    esp_netif_create_default_wifi_sta();
+    netif = esp_netif_create_default_wifi_sta();
 
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     esp_wifi_init(&cfg);
@@ -87,9 +91,9 @@ esp_err_t wifi_init(void)
     esp_event_handler_instance_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &event_handler, NULL, &instance_got_ip);
 
     wifi_config_t wifi_config = { 0 };
-    memcpy(wifi_config.sta.ssid, wifi_ssid, 32);
-    memcpy(wifi_config.sta.password, wifi_pass, 64);
-    wifi_config.sta.threshold.authmode = WIFI_AUTH_WPA_WPA2_PSK;
+    memcpy(wifi_config.sta.ssid, wifi_info.ssid, 32);
+    memcpy(wifi_config.sta.password, wifi_info.password, 64);
+    wifi_config.sta.threshold.authmode = wifi_info.authmode;
 
     esp_wifi_set_mode(WIFI_MODE_STA);
     esp_wifi_set_config(WIFI_IF_STA, &wifi_config);
@@ -97,18 +101,41 @@ esp_err_t wifi_init(void)
 
     ESP_LOGI(TAG, "wifi_init_sta finished.");
 
-    EventBits_t bits =
-        xEventGroupWaitBits(s_wifi_event_group, WIFI_CONNECTED_BIT | WIFI_FAIL_BIT, pdFALSE, pdFALSE, portMAX_DELAY);
+    wifi_get_connected_status(portMAX_DELAY);
 
-    if (bits & WIFI_CONNECTED_BIT) {
-        ESP_LOGI(TAG, "connected to ap SSID:%s password:%s", (char *)wifi_ssid, (char *)wifi_pass);
-    } else if (bits & WIFI_FAIL_BIT) {
-        ESP_LOGI(TAG, "Failed to connect to SSID:%s, password:%s", (char *)wifi_ssid, (char *)wifi_pass);
-    } else {
-        ESP_LOGE(TAG, "UNEXPECTED EVENT");
+    return ESP_OK;
+}
+
+esp_err_t wifi_destroy(void)
+{
+    esp_wifi_disconnect();
+    esp_wifi_stop();
+    esp_wifi_deinit();
+
+    if(wifi_get_connected_status(0) == ESP_OK) {
+        xEventGroupClearBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
+    } else if (wifi_get_connected_status(0) == ESP_FAIL) {
+        xEventGroupClearBits(s_wifi_event_group, WIFI_FAIL_BIT);
     }
 
     return ESP_OK;
+}
+
+esp_err_t wifi_get_connected_status(const TickType_t xTicksToWait)
+{
+    const EventBits_t bits =
+        xEventGroupWaitBits(s_wifi_event_group, WIFI_CONNECTED_BIT | WIFI_FAIL_BIT, pdFALSE, pdFALSE, xTicksToWait);
+
+    if (bits & WIFI_CONNECTED_BIT) {
+        ESP_LOGI(TAG, "connected to ap SSID:%s password:%s", (char *)wifi_info.ssid, (char *)wifi_info.password);
+        return ESP_OK;
+    } else if (bits & WIFI_FAIL_BIT) {
+        ESP_LOGI(TAG, "Failed to connect to SSID:%s, password:%s", (char *)wifi_info.ssid, (char *)wifi_info.password);
+        return ESP_FAIL;
+    } else {
+        ESP_LOGI(TAG, "WIFI don't connected");
+        return ESP_ERR_NOT_FOUND;
+    }
 }
 
 esp_err_t wifi_info_save_to_nvs(void)

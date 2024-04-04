@@ -5,6 +5,8 @@
 #include "esp_wifi.h"
 #include "wifi.h"
 
+#include <esp_lvgl_port.h>
+
 wifi_app_t *wifi_app;
 
 static void sw_event_cb(lv_event_t *e);
@@ -19,6 +21,8 @@ static void ui_event_return(lv_event_t *e);
 
 void wifi_event_callback(lv_event_t *e)
 {
+    LV_LOG_USER("free_internal_heap_size = %ldKB", esp_get_free_internal_heap_size() / 1024);
+    LV_LOG_USER("free_heap_size = %ldKB", esp_get_free_heap_size() / 1024);
     wifi_app = malloc(sizeof(wifi_app_t));
     options_screen_t *options_screen = lv_event_get_user_data(e);
 
@@ -75,9 +79,12 @@ void wifi_event_callback(lv_event_t *e)
     lv_obj_set_style_text_font(wifi_app->saved.label, SarasaMonoB_18, LV_PART_MAIN | LV_STATE_DEFAULT);
     if (strlen((char *)wifi_info_get_ssid()) == 0) {
         lv_label_set_text(wifi_app->saved.label, "无");
+    } else if (wifi_get_connected_status(0) == ESP_OK) {
+        lv_label_set_text_fmt(wifi_app->saved.label, "%s（已连接）", wifi_info_get_ssid());
     } else {
         lv_label_set_text_fmt(wifi_app->saved.label, "%s", wifi_info_get_ssid());
     }
+
     lv_obj_align(wifi_app->saved.label, LV_ALIGN_CENTER, 0, 0);
     lv_obj_add_event_cb(wifi_app->saved.contanier, saved_event_cb, LV_EVENT_ALL, NULL);
 
@@ -139,6 +146,8 @@ static void sw_event_cb(lv_event_t *e)
         lv_obj_add_flag(wifi_app->text3, LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(wifi_app->saved.contanier, LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(wifi_app->add.contanier, LV_OBJ_FLAG_HIDDEN);
+        wifi_destroy();
+        lv_label_set_text_fmt(wifi_app->saved.label, "%s", wifi_info_get_ssid());
     }
 }
 
@@ -147,19 +156,50 @@ static void saved_event_cb(lv_event_t *e)
     const lv_event_code_t code = lv_event_get_code(e);
 
     if(code == LV_EVENT_LONG_PRESSED) {
-        static const char * btns[] ={"忘记", "连接", ""};
-        lv_obj_t * mbox = lv_msgbox_create(NULL, "Hello", "message box", btns, true);
+        static char * btns[] ={"忘记", "", ""};
+        if (wifi_get_connected_status(0) == ESP_OK) {
+            btns[1] = "断开";
+        } else {
+            btns[1] = "连接";
+        }
+        lv_obj_t * mbox = lv_msgbox_create(NULL, "已保存的网络", (const char*)wifi_info_get_ssid(), (const char**)btns, true);
         lv_obj_set_style_text_font(mbox, SarasaMonoR_18, LV_PART_MAIN | LV_STATE_DEFAULT);
         lv_obj_add_event_cb(mbox, saved_msgbox_event_cb, LV_EVENT_VALUE_CHANGED, NULL);
-        lv_obj_center(mbox);
+        lv_obj_align(mbox, LV_ALIGN_CENTER, 0, -50);
         lv_obj_set_size(mbox, 176, 130);
+        lv_obj_t * btnm = lv_msgbox_get_btns(mbox);
+        lv_obj_set_style_bg_color(btnm, lv_color_hex(0xB1B2FF), LV_PART_ITEMS);
     }
 }
 
 static void saved_msgbox_event_cb(lv_event_t *e)
 {
-    lv_obj_t * obj = lv_event_get_current_target(e);
-    LV_LOG_USER("Button %s clicked", lv_msgbox_get_active_btn_text(obj));
+    lv_obj_t *mbox = lv_event_get_current_target(e);
+    const lv_obj_t *btnm = lv_msgbox_get_btns(mbox);
+    const uint32_t index = lv_btnmatrix_get_selected_btn(btnm);
+    lv_msgbox_close(mbox);
+
+    if (index == 1 && wifi_get_connected_status(0) == ESP_OK) {
+        wifi_destroy();
+        lv_label_set_text_fmt(wifi_app->saved.label, "%s", wifi_info_get_ssid());
+    } else if (index == 1) {
+        wifi_start();
+        if (wifi_get_connected_status(portMAX_DELAY) == ESP_OK) {
+            lv_obj_t * _mbox = lv_msgbox_create(NULL, NULL, "连接成功", NULL, true);
+            lv_obj_set_style_text_font(_mbox, SarasaMonoR_18, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text_fmt(wifi_app->saved.label, "%s（已连接）", wifi_info_get_ssid());
+        } else {
+            lv_obj_t * _mbox = lv_msgbox_create(NULL, NULL, "连接失败", NULL, true);
+            lv_obj_set_style_text_font(_mbox, SarasaMonoR_18, LV_PART_MAIN | LV_STATE_DEFAULT);
+            wifi_destroy();
+        }
+    } else {
+        wifi_destroy();
+        wifi_info_set_ssid((uint8_t*)"");
+        wifi_info_set_pwd((uint8_t*)"");
+        wifi_info_set_authmode(WIFI_AUTH_OPEN);
+        wifi_info_save_to_nvs();
+    }
 }
 
 static void add_event_cb(lv_event_t *e)
@@ -232,6 +272,7 @@ static void add_event_cb(lv_event_t *e)
         lv_obj_t * label = lv_label_create(btn_save);
         lv_obj_set_style_text_font(label, SarasaMonoR_18, LV_PART_MAIN | LV_STATE_DEFAULT);
         lv_label_set_text(label, "保存");
+        lv_obj_set_style_text_color(label, lv_color_black(), 0);
         lv_obj_center(label);
 
         lv_obj_t *btn_link = lv_btn_create(mbox);
@@ -241,7 +282,12 @@ static void add_event_cb(lv_event_t *e)
 
         label = lv_label_create(btn_link);
         lv_label_set_text(label, "连接");
+        lv_obj_set_style_text_color(label, lv_color_black(), 0);
         lv_obj_center(label);
+
+        lv_obj_set_style_bg_color(btn_save, lv_color_hex(0xB1B2FF), 0);
+        lv_obj_set_style_bg_color(btn_link, lv_color_hex(0xB1B2FF), 0);
+        lv_obj_set_style_bg_color(lv_msgbox_get_close_btn(mbox), lv_color_hex(0xB1B2FF), 0);
     }
 }
 
@@ -292,7 +338,7 @@ static void add_msgbox_dropdown_event_cb(lv_event_t * e)
 static void add_msgbox_btn_event_cb(lv_event_t *e)
 {
     const lv_obj_t *target = lv_event_get_target(e);
-    const lv_obj_t *mbox = lv_obj_get_parent(target);
+    lv_obj_t *mbox = lv_obj_get_parent(target);
     const lv_obj_t *ssid_ta = lv_obj_get_child(mbox, 5);
     const lv_obj_t *dd = lv_obj_get_child(mbox, 7);
     const lv_obj_t *pwd_ta = lv_obj_get_child(mbox, 9);
@@ -321,17 +367,28 @@ static void add_msgbox_btn_event_cb(lv_event_t *e)
         wifi_info_set_authmode(authmode);
     }
 
-    wifi_info_save_status_to_nvs();
+    wifi_info_save_to_nvs();
     if (strlen((char *)wifi_info_get_ssid()) == 0) {
         lv_label_set_text(wifi_app->saved.label, "无");
     } else {
         lv_label_set_text_fmt(wifi_app->saved.label, "%s", wifi_info_get_ssid());
     }
 
+    lv_msgbox_close(mbox);
+    wifi_destroy();
+
     if (target == btn_link) {
-
+        wifi_start();
+        if (wifi_get_connected_status(portMAX_DELAY) == ESP_OK) {
+            lv_obj_t * _mbox = lv_msgbox_create(NULL, NULL, "连接成功", NULL, true);
+            lv_obj_set_style_text_font(_mbox, SarasaMonoR_18, LV_PART_MAIN | LV_STATE_DEFAULT);
+            lv_label_set_text_fmt(wifi_app->saved.label, "%s（已连接）", wifi_info_get_ssid());
+        } else {
+            lv_obj_t * _mbox = lv_msgbox_create(NULL, NULL, "连接失败", NULL, true);
+            lv_obj_set_style_text_font(_mbox, SarasaMonoR_18, LV_PART_MAIN | LV_STATE_DEFAULT);
+            wifi_destroy();
+        }
     }
-
 }
 
 static void add_msgbox_event_cb(lv_event_t *e)
