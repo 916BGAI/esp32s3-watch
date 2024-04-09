@@ -27,6 +27,7 @@ extern lv_font_t *SarasaMonoB_18;
 #define UI_SYMBOL_USB             "\xEE\x9F\x85"
 #define UI_SYMBOL_WIFI            "\xEE\x9A\xA4"
 #define UI_SYMBOL_BRIGHTNESS      "\xEF\x82\x8F"
+#define UI_SYMBOL_CLOCK           "\xEE\x9D\x8F"
 
 void ui_init(void);
 

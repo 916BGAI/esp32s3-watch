@@ -169,6 +169,7 @@ static void saved_event_cb(lv_event_t *e)
         lv_obj_set_size(mbox, 176, 130);
         lv_obj_t * btnm = lv_msgbox_get_btns(mbox);
         lv_obj_set_style_bg_color(btnm, lv_color_hex(0xB1B2FF), LV_PART_ITEMS);
+        lv_obj_set_style_bg_color(lv_msgbox_get_close_btn(mbox), lv_color_hex(0xB1B2FF), 0);
     }
 }
 

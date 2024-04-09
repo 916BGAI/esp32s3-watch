@@ -10,6 +10,8 @@ typedef struct {
     lv_obj_t *contanier;
     lv_obj_t *slider;
     lv_obj_t *slider_label;
+    lv_obj_t * ret_button;
+
     char slider_label_buf[8];
     lv_style_t style_main;
     lv_style_t style_indicator;

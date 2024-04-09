@@ -34,8 +34,6 @@ void app_main(void)
     ui_init();
     lvgl_port_unlock();
 
-    // time_update();
-
     ESP_LOGI("main", "free_internal_heap_size = %ldKB", esp_get_free_internal_heap_size() / 1024);
     ESP_LOGI("main", "free_heap_size = %ldKB", esp_get_free_heap_size() / 1024);
 

@@ -6,6 +6,7 @@
 #include "esp_log.h"
 #include "esp_attr.h"
 #include "esp_netif_sntp.h"
+#include "esp_lvgl_port.h"
 #include "lwip/ip_addr.h"
 #include "esp_sntp.h"
 #include "nvs_flash.h"
@@ -35,7 +36,7 @@ static void print_servers(void)
     }
 }
 
-void time_obtain(void)
+static esp_err_t obtain_time(void)
 {
     ESP_LOGI(TAG, "Initializing SNTP");
     esp_sntp_config_t config = ESP_NETIF_SNTP_DEFAULT_CONFIG("ntp.aliyun.com");
@@ -58,12 +59,19 @@ void time_obtain(void)
     while (esp_netif_sntp_sync_wait(2000 / portTICK_PERIOD_MS) == ESP_ERR_TIMEOUT && ++retry < retry_count) {
         ESP_LOGI(TAG, "Waiting for system time to be set... (%d/%d)", retry, retry_count);
     }
+
+    if (retry == retry_count) {
+        ESP_LOGI(TAG, "Failed to update system time with timeout");
+        return ESP_ERR_TIMEOUT;
+    }
+
     time(&now);
     localtime_r(&now, &timeinfo);
     esp_netif_sntp_deinit();
+    return ESP_OK;
 }
 
-static void set_time_to_nvs(void)
+esp_err_t set_time_to_nvs(void)
 {
     time_t timer;
     time(&timer);
@@ -71,6 +79,7 @@ static void set_time_to_nvs(void)
     nvs_set_i64(sntp_config.handle, sntp_config.key, timer);
     nvs_commit(sntp_config.handle);
     nvs_close(sntp_config.handle);
+    return ESP_OK;
 }
 
 esp_err_t get_time_from_nvs(void)
@@ -91,31 +100,18 @@ esp_err_t get_time_from_nvs(void)
     }
 }
 
-void time_update(void)
+esp_err_t time_update(void)
 {
     time_t now;
     struct tm timeinfo;
     time(&now);
     localtime_r(&now, &timeinfo);
-    if (timeinfo.tm_year < (2016 - 1900)) {
-        ESP_LOGI(TAG, "Time is not set yet. Connecting to WiFi and getting time over NTP.");
-        time_obtain();
-        time(&now);
-    } else {
-        {
-            ESP_LOGI(TAG, "Add a error for test adjtime");
-            struct timeval tv_now;
-            gettimeofday(&tv_now, NULL);
-            int64_t cpu_time = (int64_t)tv_now.tv_sec * 1000000L + (int64_t)tv_now.tv_usec;
-            int64_t error_time = cpu_time + 500 * 1000L;
-            struct timeval tv_error = { .tv_sec = error_time / 1000000L, .tv_usec = error_time % 1000000L };
-            settimeofday(&tv_error, NULL);
-        }
 
-        ESP_LOGI(TAG, "Time was set, now just adjusting it. Use SMOOTH SYNC method.");
-        time_obtain();
-        time(&now);
+    if (obtain_time() != ESP_OK) {
+        return ESP_ERR_TIMEOUT;
     }
+
+    time(&now);
 
     char strftime_buf[64];
 
@@ -136,4 +132,6 @@ void time_update(void)
     }
 
     set_time_to_nvs();
+
+    return ESP_OK;
 }

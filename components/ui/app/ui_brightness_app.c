@@ -7,6 +7,8 @@
 
 brightness_app_t *brightness_app;
 
+static void ret_button_event_callback(lv_event_t *e);
+
 static void slider_event_cb(lv_event_t *e)
 {
     brightness_app->slider = lv_event_get_target(e);
@@ -36,8 +38,17 @@ void brightness_event_callback(lv_event_t *e)
     lv_label_set_text(options_screen->label.top, "屏幕亮度");
     lv_obj_load_anim(options_screen->label.top, options_screen->label.top, LV_SCR_LOAD_ANIM_FADE_IN, 200, 100);
 
-    lv_obj_clear_flag(options_screen->ret_button, LV_OBJ_FLAG_HIDDEN);
-    lv_obj_load_anim(options_screen->ret_button, options_screen->ret_button, LV_SCR_LOAD_ANIM_OVER_RIGHT, 200,
+    brightness_app->ret_button = lv_btn_create(options_screen->top_contanier);
+    lv_obj_t *return_button_label = lv_label_create(brightness_app->ret_button);
+    lv_obj_set_size(brightness_app->ret_button, 39, 27);
+    lv_obj_align(brightness_app->ret_button, LV_ALIGN_LEFT_MID, -25, 0);
+    lv_label_set_text(return_button_label, "返回");
+    lv_obj_center(return_button_label);
+    lv_obj_add_event_cb(brightness_app->ret_button, ret_button_event_callback, LV_EVENT_CLICKED, options_screen);
+    lv_obj_add_flag(brightness_app->ret_button, LV_OBJ_FLAG_HIDDEN);
+
+    lv_obj_clear_flag(brightness_app->ret_button, LV_OBJ_FLAG_HIDDEN);
+    lv_obj_load_anim(brightness_app->ret_button, brightness_app->ret_button, LV_SCR_LOAD_ANIM_OVER_RIGHT, 200,
                      100);
 
     /*Create a transition*/
@@ -89,4 +100,26 @@ void brightness_event_callback(lv_event_t *e)
                      LV_PART_INDICATOR | LV_STATE_PRESSED);
     lv_obj_add_style(brightness_app->slider, &brightness_app->style_knob, LV_PART_KNOB);
     lv_obj_add_style(brightness_app->slider, &brightness_app->style_pressed_color, LV_PART_KNOB | LV_STATE_PRESSED);
+}
+
+static void ret_button_event_callback(lv_event_t *e)
+{
+    options_screen_t *options_screen = lv_event_get_user_data(e);
+
+    display_brightness_save_to_nvs();
+    lv_label_set_text_fmt(options_screen->label.brightness, "%lu%%", display_brightness_get());
+
+    lv_label_set_text(options_screen->label.top, "设 置");
+    lv_obj_load_anim(options_screen->label.top, options_screen->label.top, LV_SCR_LOAD_ANIM_FADE_IN, 200, 100);
+    lv_obj_load_anim(options_screen->list, brightness_app->contanier, LV_SCR_LOAD_ANIM_OVER_RIGHT, 200, 100);
+    lv_style_reset(&brightness_app->style_main);
+    lv_style_reset(&brightness_app->style_indicator);
+    lv_style_reset(&brightness_app->style_pressed_color);
+    lv_style_reset(&brightness_app->style_knob);
+    lv_style_reset(&brightness_app->style_pressed_color);
+    lv_obj_del(brightness_app->contanier);
+    options_screen->app = NO_APP;
+    free(brightness_app);
+    lv_obj_del(brightness_app->ret_button);
+    lv_obj_clear_flag(options_screen->list, LV_OBJ_FLAG_HIDDEN);
 }
