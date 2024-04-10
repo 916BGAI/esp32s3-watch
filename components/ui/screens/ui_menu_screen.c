@@ -36,7 +36,7 @@ void ui_menu_screen_init(void)
 
     static app_info_t app3 = {
         .id = 3,
-        .name = "设置",
+        .name = "天气",
         .img_src = &ui_img_weather,
     };
     app_reg(&app3);
@@ -100,6 +100,7 @@ static void app_button_event_cb(lv_event_t *e)
             lv_scr_load_anim(clock_screen.screen, LV_SCR_LOAD_ANIM_FADE_ON, 300, 0, true);
             break;
         case 3:
+            ui_weather_screen_init();
             break;
         case 4:
             break;

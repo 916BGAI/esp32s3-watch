@@ -7,10 +7,9 @@ extern "C" {
 #include "lvgl/lvgl.h"
 
 void ui_clock_screen_init(void);
-
 void ui_menu_screen_init(void);
-
 void ui_options_screen_init(void);
+void ui_weather_screen_init(void);
 
 LV_IMG_DECLARE(ui_img_options);
 LV_IMG_DECLARE(ui_img_more);

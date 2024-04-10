@@ -31,7 +31,7 @@ void time_event_callback(lv_event_t *e)
 
     lv_obj_add_flag(options_screen->list, LV_OBJ_FLAG_HIDDEN);
     time_app->contanier = lv_obj_create(options_screen->screen);
-    lv_obj_add_style(time_app->contanier, &options_screen->style, 0);
+    lv_obj_set_style_border_width(time_app->contanier, 0, 0);
     lv_obj_set_size(time_app->contanier, 240, 240);
     lv_obj_align(time_app->contanier, LV_ALIGN_TOP_MID, 0, 40);
     lv_obj_load_anim(time_app->contanier, options_screen->list, LV_SCR_LOAD_ANIM_OVER_LEFT, 200, 100);
@@ -43,7 +43,7 @@ void time_event_callback(lv_event_t *e)
     time_app->sw.contanier = lv_obj_create(time_app->contanier);
     lv_obj_set_size(time_app->sw.contanier, 210, 53);
     lv_obj_align(time_app->sw.contanier, LV_ALIGN_TOP_MID, 0, 0);
-    lv_obj_add_style(time_app->sw.contanier, &options_screen->style, 0);
+    lv_obj_set_style_border_width(time_app->sw.contanier, 0, 0);
     lv_obj_clear_flag(time_app->sw.contanier, LV_OBJ_FLAG_SCROLLABLE);
     lv_obj_set_style_bg_color(time_app->sw.contanier, lv_color_hex(0xD5DAF9), 0);
     time_app->sw.label = lv_label_create(time_app->sw.contanier);
@@ -65,7 +65,7 @@ void time_event_callback(lv_event_t *e)
     time_app->date.contanier = lv_obj_create(time_app->contanier);
     lv_obj_set_size(time_app->date.contanier, 210, 53);
     lv_obj_align(time_app->date.contanier, LV_ALIGN_TOP_MID, 0, 57);
-    lv_obj_add_style(time_app->date.contanier, &options_screen->style, 0);
+    lv_obj_set_style_border_width(time_app->date.contanier, 0, 0);
     lv_obj_clear_flag(time_app->date.contanier, LV_OBJ_FLAG_SCROLLABLE);
     time_app->date.label = lv_label_create(time_app->date.contanier);
     lv_obj_set_style_text_font(time_app->date.label, SarasaMonoR_18, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -80,7 +80,7 @@ void time_event_callback(lv_event_t *e)
     time_app->time.contanier = lv_obj_create(time_app->contanier);
     lv_obj_set_size(time_app->time.contanier, 210, 53);
     lv_obj_align(time_app->time.contanier, LV_ALIGN_TOP_MID, 0, 114);
-    lv_obj_add_style(time_app->time.contanier, &options_screen->style, 0);
+    lv_obj_set_style_border_width(time_app->time.contanier, 0, 0);
     lv_obj_clear_flag(time_app->time.contanier, LV_OBJ_FLAG_SCROLLABLE);
     time_app->time.label = lv_label_create(time_app->time.contanier);
     lv_obj_set_style_text_font(time_app->time.label, SarasaMonoR_18, LV_PART_MAIN | LV_STATE_DEFAULT);

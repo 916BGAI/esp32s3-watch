@@ -31,7 +31,7 @@ void wifi_event_callback(lv_event_t *e)
 
     lv_obj_add_flag(options_screen->list, LV_OBJ_FLAG_HIDDEN);
     wifi_app->contanier = lv_obj_create(options_screen->screen);
-    lv_obj_add_style(wifi_app->contanier, &options_screen->style, 0);
+    lv_obj_set_style_border_width(wifi_app->contanier, 0, 0);
     lv_obj_set_size(wifi_app->contanier, 240, 240);
     lv_obj_align(wifi_app->contanier, LV_ALIGN_TOP_MID, 0, 40);
     lv_obj_load_anim(wifi_app->contanier, options_screen->list, LV_SCR_LOAD_ANIM_OVER_LEFT, 200, 100);
@@ -43,7 +43,7 @@ void wifi_event_callback(lv_event_t *e)
     wifi_app->sw.contanier = lv_obj_create(wifi_app->contanier);
     lv_obj_set_size(wifi_app->sw.contanier, 210, 53);
     lv_obj_align(wifi_app->sw.contanier, LV_ALIGN_TOP_MID, 0, 0);
-    lv_obj_add_style(wifi_app->sw.contanier, &options_screen->style, 0);
+    lv_obj_set_style_border_width(wifi_app->sw.contanier, 0, 0);
     lv_obj_clear_flag(wifi_app->sw.contanier, LV_OBJ_FLAG_SCROLLABLE);
     lv_obj_set_style_bg_color(wifi_app->sw.contanier, lv_color_hex(0xD5DAF9), 0);
     wifi_app->sw.label = lv_label_create(wifi_app->sw.contanier);
@@ -72,7 +72,7 @@ void wifi_event_callback(lv_event_t *e)
     wifi_app->saved.contanier = lv_obj_create(wifi_app->contanier);
     lv_obj_set_size(wifi_app->saved.contanier, 210, 53);
     lv_obj_align_to(wifi_app->saved.contanier, wifi_app->text2, LV_ALIGN_OUT_BOTTOM_MID, 0, 5);
-    lv_obj_add_style(wifi_app->saved.contanier, &options_screen->style, 0);
+    lv_obj_set_style_border_width(wifi_app->saved.contanier, 0, 0);
     lv_obj_clear_flag(wifi_app->saved.contanier, LV_OBJ_FLAG_SCROLLABLE);
     lv_obj_set_style_bg_color(wifi_app->saved.contanier, lv_color_hex(0xD5DAF9), 0);
     wifi_app->saved.label = lv_label_create(wifi_app->saved.contanier);
@@ -98,7 +98,7 @@ void wifi_event_callback(lv_event_t *e)
     wifi_app->add.contanier = lv_obj_create(wifi_app->contanier);
     lv_obj_set_size(wifi_app->add.contanier, 210, 53);
     lv_obj_align_to(wifi_app->add.contanier, wifi_app->text3, LV_ALIGN_OUT_BOTTOM_MID, 0, 5);
-    lv_obj_add_style(wifi_app->add.contanier, &options_screen->style, 0);
+    lv_obj_set_style_border_width(wifi_app->add.contanier, 0, 0);
     lv_obj_clear_flag(wifi_app->add.contanier, LV_OBJ_FLAG_SCROLLABLE);
     lv_obj_set_style_bg_color(wifi_app->add.contanier, lv_color_hex(0xD5DAF9), 0);
     wifi_app->add.label = lv_label_create(wifi_app->add.contanier);

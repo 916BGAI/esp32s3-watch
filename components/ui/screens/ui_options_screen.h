@@ -18,7 +18,6 @@ typedef struct {
     lv_obj_t *screen;
     lv_obj_t *list;
     lv_obj_t *top_contanier;
-    lv_style_t style;
     enum options_app app;
 
     struct {

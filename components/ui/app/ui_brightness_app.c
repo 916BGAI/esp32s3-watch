@@ -32,7 +32,7 @@ void brightness_event_callback(lv_event_t *e)
     lv_obj_add_flag(options_screen->list, LV_OBJ_FLAG_HIDDEN);
     brightness_app->contanier = lv_obj_create(options_screen->screen);
     lv_obj_set_size(brightness_app->contanier, 240, 240);
-    lv_obj_add_style(brightness_app->contanier, &options_screen->style, 0);
+    lv_obj_set_style_border_width(brightness_app->contanier, 0, 0);
     lv_obj_align(brightness_app->contanier, LV_ALIGN_TOP_MID, 0, 40);
     lv_obj_load_anim(brightness_app->contanier, options_screen->list, LV_SCR_LOAD_ANIM_OVER_LEFT, 200, 100);
     lv_label_set_text(options_screen->label.top, "屏幕亮度");

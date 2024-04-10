@@ -21,7 +21,7 @@ void usb_event_callback(lv_event_t *e)
 
     lv_obj_add_flag(options_screen->list, LV_OBJ_FLAG_HIDDEN);
     usb_app->contanier = lv_obj_create(options_screen->screen);
-    lv_obj_add_style(usb_app->contanier, &options_screen->style, 0);
+    lv_obj_set_style_border_width(usb_app->contanier, 0, 0);
     lv_obj_set_size(usb_app->contanier, 240, 240);
     lv_obj_align(usb_app->contanier, LV_ALIGN_TOP_MID, 0, 40);
     lv_obj_load_anim(usb_app->contanier, options_screen->list, LV_SCR_LOAD_ANIM_OVER_LEFT, 200, 100);
@@ -33,7 +33,7 @@ void usb_event_callback(lv_event_t *e)
     usb_app->sw.contanier = lv_obj_create(usb_app->contanier);
     lv_obj_set_size(usb_app->sw.contanier, 210, 53);
     lv_obj_align(usb_app->sw.contanier, LV_ALIGN_TOP_MID, 0, 0);
-    lv_obj_add_style(usb_app->sw.contanier, &options_screen->style, 0);
+    lv_obj_set_style_border_width(usb_app->sw.contanier, 0, 0);
     lv_obj_clear_flag(usb_app->sw.contanier, LV_OBJ_FLAG_SCROLLABLE);
     lv_obj_set_style_bg_color(usb_app->sw.contanier, lv_color_hex(0xD5DAF9), 0);
     usb_app->sw.label = lv_label_create(usb_app->sw.contanier);

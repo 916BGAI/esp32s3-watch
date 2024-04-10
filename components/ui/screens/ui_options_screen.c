@@ -35,6 +35,7 @@ void ui_options_screen_init(void)
     options_screen->list = lv_list_create(options_screen->screen);
     lv_obj_set_size(options_screen->list, 240, 240);
     lv_obj_align(options_screen->list, LV_ALIGN_TOP_MID, 0, 40);
+    lv_obj_set_style_border_width(options_screen->list, 0, 0);
 
     lv_obj_t *btn = lv_list_add_btn(options_screen->list, UI_SYMBOL_BRIGHTNESS, "屏幕亮度");
     lv_obj_add_event_cb(btn, brightness_event_callback, LV_EVENT_CLICKED, options_screen);
@@ -62,16 +63,9 @@ void ui_options_screen_init(void)
     lv_obj_set_style_text_font(options_screen->label.usb, SarasaMonoR_18, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_label_set_text(options_screen->label.usb, "关");
 
-    lv_style_init(&options_screen->style);
-    lv_style_set_border_width(&options_screen->style, 0);
-    lv_obj_add_style(options_screen->list, &options_screen->style, 0);
-
     lv_obj_add_event_cb(options_screen->screen, ui_event_options_screen, LV_EVENT_ALL, NULL);
-
     lv_scr_load_anim(options_screen->screen, LV_SCR_LOAD_ANIM_FADE_ON, 300, 0, true);
 }
-
-extern brightness_app_t *brightness_app;
 
 extern menu_screen_t *menu_screen;
 void ui_event_options_screen(lv_event_t *e)
