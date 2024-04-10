@@ -20,13 +20,22 @@ void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 void app_main(void)
 {
     esp_log_level_set("*", ESP_LOG_INFO);
+    static char buffer[256];
 
     nvs_init();
     fatfs_init();
     wifi_init();
 
-    ESP_LOGI("main", "free_internal_heap_size = %ldKB", esp_get_free_internal_heap_size() / 1024);
-    ESP_LOGI("main", "free_heap_size = %ldKB", esp_get_free_heap_size() / 1024);
+    sprintf(buffer, "   Biggest /     Free /    Total\n"
+                "\t  SRAM : [%8dKB / %8dKB / %8dKB]\n"
+                "\t PSRAM : [%8dKB / %8dKB / %8dKB]",
+                heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL) / 1024,
+                heap_caps_get_free_size(MALLOC_CAP_INTERNAL) / 1024,
+                heap_caps_get_total_size(MALLOC_CAP_INTERNAL) / 1024,
+                heap_caps_get_largest_free_block(MALLOC_CAP_SPIRAM) / 1024,
+                heap_caps_get_free_size(MALLOC_CAP_SPIRAM) / 1024,
+                heap_caps_get_total_size(MALLOC_CAP_SPIRAM) / 1024);
+    ESP_LOGI("MEM", "%s", buffer);
 
     display_init();
     ESP_LOGI("main", "Display LVGL");
@@ -34,10 +43,18 @@ void app_main(void)
     ui_init();
     lvgl_port_unlock();
 
-    ESP_LOGI("main", "free_internal_heap_size = %ldKB", esp_get_free_internal_heap_size() / 1024);
-    ESP_LOGI("main", "free_heap_size = %ldKB", esp_get_free_heap_size() / 1024);
-
     for (;;) {
         vTaskDelay(1000 / portTICK_PERIOD_MS);
+
+        sprintf(buffer, "   Biggest /     Free /    Total\n"
+                "\t  SRAM : [%8dKB / %8dKB / %8dKB]\n"
+                "\t PSRAM : [%8dKB / %8dKB / %8dKB]",
+                heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL) / 1024,
+                heap_caps_get_free_size(MALLOC_CAP_INTERNAL) / 1024,
+                heap_caps_get_total_size(MALLOC_CAP_INTERNAL) / 1024,
+                heap_caps_get_largest_free_block(MALLOC_CAP_SPIRAM) / 1024,
+                heap_caps_get_free_size(MALLOC_CAP_SPIRAM) / 1024,
+                heap_caps_get_total_size(MALLOC_CAP_SPIRAM) / 1024);
+        ESP_LOGI("MEM", "%s", buffer);
     }
 }

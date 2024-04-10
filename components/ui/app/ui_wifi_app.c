@@ -21,8 +21,18 @@ static void ui_event_return(lv_event_t *e);
 
 void wifi_event_callback(lv_event_t *e)
 {
-    LV_LOG_USER("free_internal_heap_size = %ldKB", esp_get_free_internal_heap_size() / 1024);
-    LV_LOG_USER("free_heap_size = %ldKB", esp_get_free_heap_size() / 1024);
+    static char buffer[256];
+    sprintf(buffer, "   Biggest /     Free /    Total\n"
+                "\t  SRAM : [%8dKB / %8dKB / %8dKB]\n"
+                "\t PSRAM : [%8dKB / %8dKB / %8dKB]",
+                heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL) / 1024,
+                heap_caps_get_free_size(MALLOC_CAP_INTERNAL) / 1024,
+                heap_caps_get_total_size(MALLOC_CAP_INTERNAL) / 1024,
+                heap_caps_get_largest_free_block(MALLOC_CAP_SPIRAM) / 1024,
+                heap_caps_get_free_size(MALLOC_CAP_SPIRAM) / 1024,
+                heap_caps_get_total_size(MALLOC_CAP_SPIRAM) / 1024);
+    LV_LOG_USER("%s", buffer);
+
     wifi_app = malloc(sizeof(wifi_app_t));
     options_screen_t *options_screen = lv_event_get_user_data(e);
 
