@@ -21,18 +21,6 @@ static void ui_event_return(lv_event_t *e);
 
 void wifi_event_callback(lv_event_t *e)
 {
-    static char buffer[256];
-    sprintf(buffer, "   Biggest /     Free /    Total\n"
-                "\t  SRAM : [%8dKB / %8dKB / %8dKB]\n"
-                "\t PSRAM : [%8dKB / %8dKB / %8dKB]",
-                heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL) / 1024,
-                heap_caps_get_free_size(MALLOC_CAP_INTERNAL) / 1024,
-                heap_caps_get_total_size(MALLOC_CAP_INTERNAL) / 1024,
-                heap_caps_get_largest_free_block(MALLOC_CAP_SPIRAM) / 1024,
-                heap_caps_get_free_size(MALLOC_CAP_SPIRAM) / 1024,
-                heap_caps_get_total_size(MALLOC_CAP_SPIRAM) / 1024);
-    LV_LOG_USER("%s", buffer);
-
     wifi_app = malloc(sizeof(wifi_app_t));
     options_screen_t *options_screen = lv_event_get_user_data(e);
 
@@ -423,6 +411,7 @@ static void ui_event_return(lv_event_t *e)
         lv_obj_del(wifi_app->contanier);
         options_screen->app = NO_APP;
         free(wifi_app);
+        wifi_app = NULL;
         lv_obj_clear_flag(options_screen->list, LV_OBJ_FLAG_HIDDEN);
         wifi_info_save_status_to_nvs();
     }

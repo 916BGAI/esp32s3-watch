@@ -45,7 +45,6 @@ void app_main(void)
 
     for (;;) {
         vTaskDelay(1000 / portTICK_PERIOD_MS);
-
         sprintf(buffer, "   Biggest /     Free /    Total\n"
                 "\t  SRAM : [%8dKB / %8dKB / %8dKB]\n"
                 "\t PSRAM : [%8dKB / %8dKB / %8dKB]",

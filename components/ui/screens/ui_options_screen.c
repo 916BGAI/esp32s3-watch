@@ -79,5 +79,6 @@ void ui_event_options_screen(lv_event_t *e)
         lv_scr_load_anim(menu_screen->screen, LV_SCR_LOAD_ANIM_FADE_ON, 300, 0, true);
     } else if (event_code == LV_EVENT_SCREEN_UNLOADED) {
         free(options_screen);
+        options_screen = NULL;
     }
 }

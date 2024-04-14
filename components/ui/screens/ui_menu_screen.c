@@ -1,7 +1,7 @@
 #include "../ui.h"
 #include "ui_clock_screen.h"
-#include "ui_options_screen.h"
 #include "ui_menu_screen.h"
+#include "wifi.h"
 
 menu_screen_t *menu_screen;
 
@@ -23,30 +23,37 @@ void ui_menu_screen_init(void)
     static app_info_t app1 = {
         .id = 1,
         .name = "设置",
-        .img_src = &ui_img_options,
+        .img_src = "A:images/menu/options.bin",
     };
     app_reg(&app1);
 
     static app_info_t app2 = {
         .id = 2,
         .name = "时钟",
-        .img_src = &ui_img_clock,
+        .img_src = "A:images/menu/clock.bin",
     };
     app_reg(&app2);
 
     static app_info_t app3 = {
         .id = 3,
         .name = "天气",
-        .img_src = &ui_img_weather,
+        .img_src = "A:images/menu/weather.bin",
     };
     app_reg(&app3);
 
     static app_info_t app4 = {
         .id = 4,
-        .name = "设置",
-        .img_src = &ui_img_more,
+        .name = "计时",
+        .img_src = "A:images/menu/timer.bin",
     };
     app_reg(&app4);
+
+    static app_info_t app5 = {
+        .id = 5,
+        .name = "设置",
+        .img_src = "A:images/menu/more.bin",
+    };
+    app_reg(&app5);
 
     lv_obj_add_event_cb(menu_screen->screen, ui_event_menu_screen, LV_EVENT_ALL, NULL);
 }
@@ -54,7 +61,7 @@ void ui_menu_screen_init(void)
 void app_reg(app_info_t *app_info)
 {
     static uint8_t tile_index = 0;
-    if (tile_index > 3) {
+    if (tile_index > 4) {
         tile_index = 0;
     }
     menu_screen->tile = lv_tileview_add_tile(menu_screen->tv, tile_index++, 0, LV_DIR_LEFT | LV_DIR_RIGHT);
@@ -82,6 +89,7 @@ void ui_event_menu_screen(lv_event_t *e)
         lv_indev_wait_release(lv_indev_get_act());
         lv_scr_load_anim(clock_screen.screen, LV_SCR_LOAD_ANIM_OUT_TOP, 300, 0, true);
         free(menu_screen);
+        menu_screen = NULL;
     }
 }
 
@@ -95,19 +103,35 @@ static void app_button_event_cb(lv_event_t *e)
         switch (id) {
         case 1:
             ui_options_screen_init();
+            free(menu_screen);
+            menu_screen = NULL;
             break;
         case 2:
             lv_scr_load_anim(clock_screen.screen, LV_SCR_LOAD_ANIM_FADE_ON, 300, 0, true);
+            free(menu_screen);
+            menu_screen = NULL;
             break;
         case 3:
-            ui_weather_screen_init();
+            if (wifi_get_connected_status(0) == ESP_OK) {
+                ui_weather_screen_init();
+                free(menu_screen);
+                menu_screen = NULL;
+            } else {
+                lv_obj_t * mbox = lv_msgbox_create(NULL, "天气", "若要查看天气，\n请连接Wi-Fi", NULL, true);
+                lv_obj_set_style_text_font(mbox, SarasaMonoR_18, LV_PART_MAIN | LV_STATE_DEFAULT);
+                lv_obj_align(mbox, LV_ALIGN_CENTER, 0, 0);
+                lv_obj_set_size(mbox, 176, 120);
+            }
             break;
         case 4:
+            ui_timer_screen_init();
+            free(menu_screen);
+            menu_screen = NULL;
+            break;
+        case 5:
             break;
         default:
             break;
         }
-
-        free(menu_screen);
     }
 }

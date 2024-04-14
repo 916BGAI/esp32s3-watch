@@ -5,6 +5,7 @@
     <inspection_tool class="CppDFAConstantParameter" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="CppDFADeletedPointer" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="CppDFAEndlessLoop" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="CppDFANullDereference" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="CppParameterMayBeConstPtrOrRef" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="CppRedundantInlineSpecifier" enabled="false" level="HINT" enabled_by_default="false" />
   </profile>

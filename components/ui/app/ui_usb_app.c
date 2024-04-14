@@ -90,6 +90,7 @@ static void ui_event_return(lv_event_t *e)
         lv_obj_del(usb_app->contanier);
         options_screen->app = NO_APP;
         free(usb_app);
+        usb_app = NULL;
         lv_obj_clear_flag(options_screen->list, LV_OBJ_FLAG_HIDDEN);
     }
 }

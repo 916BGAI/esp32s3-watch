@@ -8,15 +8,14 @@ extern "C" {
 
 typedef struct {
     lv_obj_t *screen;
-    lv_obj_t *tv;
-    lv_obj_t *tile;
-} menu_screen_t;
 
-typedef struct {
-    uint32_t id;
-    char *name;
-    char *img_src;
-} app_info_t;
+    struct {
+        lv_obj_t *hour;
+        lv_obj_t *min;
+        lv_obj_t *sec;
+    } roller;
+
+} timer_screen_t;
 
 #ifdef __cplusplus
 } /*extern "C"*/

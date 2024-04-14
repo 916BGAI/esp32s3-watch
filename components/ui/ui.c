@@ -3,6 +3,7 @@
 lv_font_t *SarasaMonoR_16;
 lv_font_t *SarasaMonoR_18;
 lv_font_t *SarasaMonoB_18;
+lv_font_t *SarasaMonoB_30;
 
 void ui_init(void)
 {

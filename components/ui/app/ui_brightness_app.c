@@ -120,6 +120,7 @@ static void ret_button_event_callback(lv_event_t *e)
     lv_obj_del(brightness_app->contanier);
     options_screen->app = NO_APP;
     free(brightness_app);
+    brightness_app = NULL;
     lv_obj_del(brightness_app->ret_button);
     lv_obj_clear_flag(options_screen->list, LV_OBJ_FLAG_HIDDEN);
 }
