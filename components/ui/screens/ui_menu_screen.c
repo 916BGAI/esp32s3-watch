@@ -1,6 +1,7 @@
 #include "../ui.h"
 #include "ui_clock_screen.h"
 #include "ui_menu_screen.h"
+#include "ui_timer_screen.h"
 #include "wifi.h"
 
 menu_screen_t *menu_screen;
@@ -94,6 +95,7 @@ void ui_event_menu_screen(lv_event_t *e)
 }
 
 extern clock_screen_t clock_screen;
+extern timer_screen_t *timer_screen;
 static void app_button_event_cb(lv_event_t *e)
 {
     const lv_event_code_t event_code = lv_event_get_code(e);
@@ -124,7 +126,12 @@ static void app_button_event_cb(lv_event_t *e)
             }
             break;
         case 4:
-            ui_timer_screen_init();
+            if(get_timer_config().status == STOP) {
+                ui_timer_screen_init();
+                lv_scr_load_anim(timer_screen->screen, LV_SCR_LOAD_ANIM_FADE_ON, 300, 0, true);
+            } else {
+                lv_scr_load_anim(timer_screen->screen, LV_SCR_LOAD_ANIM_FADE_ON, 300, 0, true);
+            }
             free(menu_screen);
             menu_screen = NULL;
             break;
