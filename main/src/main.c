@@ -10,7 +10,6 @@
 #include "ui.h"
 #include "usb.h"
 #include "wifi.h"
-#include "sntp.h"
 
 void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName)
 {
@@ -45,15 +44,15 @@ void app_main(void)
 
     for (;;) {
         vTaskDelay(1000 / portTICK_PERIOD_MS);
-        sprintf(buffer, "   Biggest /     Free /    Total\n"
-                "\t  SRAM : [%8dKB / %8dKB / %8dKB]\n"
-                "\t PSRAM : [%8dKB / %8dKB / %8dKB]",
-                heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL) / 1024,
-                heap_caps_get_free_size(MALLOC_CAP_INTERNAL) / 1024,
-                heap_caps_get_total_size(MALLOC_CAP_INTERNAL) / 1024,
-                heap_caps_get_largest_free_block(MALLOC_CAP_SPIRAM) / 1024,
-                heap_caps_get_free_size(MALLOC_CAP_SPIRAM) / 1024,
-                heap_caps_get_total_size(MALLOC_CAP_SPIRAM) / 1024);
-        ESP_LOGI("MEM", "%s", buffer);
+        // sprintf(buffer, "   Biggest /     Free /    Total\n"
+        //         "\t  SRAM : [%8dKB / %8dKB / %8dKB]\n"
+        //         "\t PSRAM : [%8dKB / %8dKB / %8dKB]",
+        //         heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL) / 1024,
+        //         heap_caps_get_free_size(MALLOC_CAP_INTERNAL) / 1024,
+        //         heap_caps_get_total_size(MALLOC_CAP_INTERNAL) / 1024,
+        //         heap_caps_get_largest_free_block(MALLOC_CAP_SPIRAM) / 1024,
+        //         heap_caps_get_free_size(MALLOC_CAP_SPIRAM) / 1024,
+        //         heap_caps_get_total_size(MALLOC_CAP_SPIRAM) / 1024);
+        // ESP_LOGI("MEM", "%s", buffer);
     }
 }

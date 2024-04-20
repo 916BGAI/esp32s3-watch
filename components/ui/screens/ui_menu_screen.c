@@ -51,10 +51,17 @@ void ui_menu_screen_init(void)
 
     static app_info_t app5 = {
         .id = 5,
+        .name = "定位",
+        .img_src = "A:images/menu/position.bin",
+    };
+    app_reg(&app5);
+
+    static app_info_t app6 = {
+        .id = 6,
         .name = "设置",
         .img_src = "A:images/menu/more.bin",
     };
-    app_reg(&app5);
+    app_reg(&app6);
 
     lv_obj_add_event_cb(menu_screen->screen, ui_event_menu_screen, LV_EVENT_ALL, NULL);
 }
@@ -62,7 +69,7 @@ void ui_menu_screen_init(void)
 void app_reg(app_info_t *app_info)
 {
     static uint8_t tile_index = 0;
-    if (tile_index > 4) {
+    if (tile_index > 5) {
         tile_index = 0;
     }
     menu_screen->tile = lv_tileview_add_tile(menu_screen->tv, tile_index++, 0, LV_DIR_LEFT | LV_DIR_RIGHT);
@@ -136,6 +143,11 @@ static void app_button_event_cb(lv_event_t *e)
             menu_screen = NULL;
             break;
         case 5:
+            ui_gps_screen_init();
+            free(menu_screen);
+            menu_screen = NULL;
+            break;
+        case 6:
             break;
         default:
             break;
