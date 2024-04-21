@@ -20,7 +20,7 @@ extern "C" {
     {                                      \
         .uart = {                          \
             .uart_port = UART_NUM_1,       \
-            .rx_pin = 1,                   \
+            .rx_pin = 2,                   \
             .baud_rate = 115200,           \
             .data_bits = UART_DATA_8_BITS, \
             .parity = UART_PARITY_DISABLE, \
