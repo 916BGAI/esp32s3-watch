@@ -406,6 +406,7 @@ static void ui_event_weather_screen(lv_event_t *e)
         lv_indev_wait_release(lv_indev_get_act());
         ui_menu_screen_init();
         lv_scr_load_anim(menu_screen->screen, LV_SCR_LOAD_ANIM_FADE_ON, 300, 0, true);
+        lv_obj_set_tile_id(menu_screen->tv, 2, 0, LV_ANIM_OFF);
     } else if (event_code == LV_EVENT_SCREEN_UNLOADED) {
         for (int i = 0; i < LOCATION_NUM_MAX; i++) {
             free(weather_info[i]->windDir);
