@@ -58,7 +58,7 @@ void ui_menu_screen_init(void)
 
     static app_info_t app6 = {
         .id = 6,
-        .name = "设置",
+        .name = "更多",
         .img_src = "A:images/menu/more.bin",
     };
     app_reg(&app6);
@@ -148,6 +148,9 @@ static void app_button_event_cb(lv_event_t *e)
             menu_screen = NULL;
             break;
         case 6:
+            ui_more_screen_init();
+            free(menu_screen);
+            menu_screen = NULL;
             break;
         default:
             break;

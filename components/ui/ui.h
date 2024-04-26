@@ -10,8 +10,9 @@ void ui_clock_screen_init(void);
 void ui_menu_screen_init(void);
 void ui_options_screen_init(void);
 void ui_weather_screen_init(void);
-void ui_gps_screen_init(void);
 void ui_timer_screen_init(void);
+void ui_gps_screen_init(void);
+void ui_more_screen_init(void);
 
 LV_IMG_DECLARE(ui_img_hand_hour);
 LV_IMG_DECLARE(ui_img_hand_min);
@@ -26,6 +27,9 @@ extern lv_font_t *SarasaMonoB_30;
 #define UI_SYMBOL_WIFI            "\xEE\x9A\xA4"
 #define UI_SYMBOL_BRIGHTNESS      "\xEF\x82\x8F"
 #define UI_SYMBOL_CLOCK           "\xEE\x9D\x8F"
+#define UI_SYMBOL_CPU             "\xEE\x98\x8C"
+#define UI_SYMBOL_MEM             "\xEE\x98\xA7"
+#define UI_SYMBOL_FLASH           "\xEE\x9B\xAC"
 
 void ui_init(void);
 

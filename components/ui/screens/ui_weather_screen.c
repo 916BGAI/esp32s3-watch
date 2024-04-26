@@ -317,9 +317,9 @@ static esp_err_t weather_parse_now(char *buffer, location_num_t location)
     cJSON *json = cJSON_Parse(buffer);
     cJSON *json_now = NULL;
 
-    if (NULL != json) {
+    if (json != NULL) {
         json_now = cJSON_GetObjectItem(json, "now");
-        if (NULL != json_now) {
+        if (json_now != NULL) {
             cJSON *json_item_temp = cJSON_GetObjectItem(json_now, "temp");
             cJSON *json_item_icon = cJSON_GetObjectItem(json_now, "icon");
             cJSON *json_item_text = cJSON_GetObjectItem(json_now, "text");
