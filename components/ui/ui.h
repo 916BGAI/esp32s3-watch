@@ -30,6 +30,10 @@ extern lv_font_t *SarasaMonoB_30;
 #define UI_SYMBOL_CPU             "\xEE\x98\x8C"
 #define UI_SYMBOL_MEM             "\xEE\x98\xA7"
 #define UI_SYMBOL_FLASH           "\xEE\x9B\xAC"
+#define UI_SYMBOL_RESOLUTION      "\xEE\x99\x82"
+#define UI_SYMBOL_ESPIDF          "\xEE\x9A\x83"
+#define UI_SYMBOL_FREERTOS        "\xEE\x9C\x85"
+#define UI_SYMBOL_VERSION         "\xEE\x9B\xBA"
 
 void ui_init(void);
 
