@@ -47,6 +47,14 @@ static wifi_info_t wifi_info = {
     },
 };
 
+/**
+ * @brief Wi-Fi事件处理函数
+ * 
+ * @param arg 参数指针
+ * @param event_base 事件基础
+ * @param event_id 事件ID
+ * @param event_data 事件数据指针
+ */
 static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
 {
     static int s_retry_num = 0;
@@ -70,12 +78,22 @@ static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_
     }
 }
 
+/**
+ * @brief Wi-Fi初始化函数
+ * 
+ * @return esp_err_t 初始化结果，ESP_OK 表示成功，其他值表示失败
+ */
 esp_err_t wifi_init(void)
 {
     s_wifi_event_group = xEventGroupCreate();
     return ESP_OK;
 }
 
+/**
+ * @brief Wi-Fi启动函数
+ * 
+ * @return esp_err_t 启动结果，ESP_OK 表示成功，其他值表示失败
+ */
 esp_err_t wifi_start(void)
 {
     esp_netif_init();
@@ -106,6 +124,11 @@ esp_err_t wifi_start(void)
     return ESP_OK;
 }
 
+/**
+ * @brief Wi-Fi销毁函数
+ * 
+ * @return esp_err_t 销毁结果，ESP_OK 表示成功，其他值表示失败
+ */
 esp_err_t wifi_destroy(void)
 {
     esp_wifi_disconnect();
@@ -121,6 +144,12 @@ esp_err_t wifi_destroy(void)
     return ESP_OK;
 }
 
+/**
+ * @brief 获取Wi-Fi连接状态
+ * 
+ * @param xTicksToWait 等待时间
+ * @return esp_err_t 连接状态，ESP_OK 表示连接成功，ESP_FAIL 表示连接失败，ESP_ERR_NOT_FOUND 表示未找到连接状态
+ */
 esp_err_t wifi_get_connected_status(const TickType_t xTicksToWait)
 {
     const EventBits_t bits =
@@ -138,6 +167,11 @@ esp_err_t wifi_get_connected_status(const TickType_t xTicksToWait)
     }
 }
 
+/**
+ * @brief 将Wi-Fi配置信息保存到NVS中
+ * 
+ * @return esp_err_t 保存结果，ESP_OK 表示成功，其他值表示失败
+ */
 esp_err_t wifi_info_save_to_nvs(void)
 {
     nvs_open(wifi_info.namespace, NVS_READWRITE, &wifi_info.handle);
@@ -150,6 +184,11 @@ esp_err_t wifi_info_save_to_nvs(void)
     return ESP_OK;
 }
 
+/**
+ * @brief 从NVS中获取Wi-Fi配置信息
+ * 
+ * @return esp_err_t 获取结果，ESP_OK 表示成功，其他值表示失败
+ */
 esp_err_t wifi_info_obtain_from_nvs(void)
 {
     size_t ssid_size = 32;
@@ -163,17 +202,33 @@ esp_err_t wifi_info_obtain_from_nvs(void)
     return ESP_OK;
 }
 
+/**
+ * @brief 设置Wi-Fi连接状态
+ * 
+ * @param status 连接状态，true 表示已连接，false 表示未连接
+ * @return esp_err_t 设置结果，ESP_OK 表示成功，其他值表示失败
+ */
 esp_err_t wifi_info_set_status(const bool status)
 {
     wifi_info.status = status;
     return ESP_OK;
 }
 
+/**
+ * @brief 获取Wi-Fi连接状态
+ * 
+ * @return uint32_t 连接状态，true 表示已连接，false 表示未连接
+ */
 uint32_t wifi_info_get_status(void)
 {
     return wifi_info.status;
 }
 
+/**
+ * @brief 将Wi-Fi状态信息保存到NVS中
+ * 
+ * @return esp_err_t 保存结果，ESP_OK 表示成功，其他值表示失败
+ */
 esp_err_t wifi_info_save_status_to_nvs(void)
 {
     nvs_open(wifi_info.namespace, NVS_READWRITE, &wifi_info.handle);
@@ -183,34 +238,67 @@ esp_err_t wifi_info_save_status_to_nvs(void)
     return ESP_OK;
 }
 
+/**
+ * @brief 设置Wi-Fi SSID
+ * 
+ * @param ssid SSID字符串
+ * @return esp_err_t 设置结果，ESP_OK 表示成功，其他值表示失败
+ */
 esp_err_t wifi_info_set_ssid(const uint8_t *ssid)
 {
     memcpy(wifi_info.ssid, ssid, 32);
     return ESP_OK;
 }
 
+/**
+ * @brief 获取Wi-Fi SSID
+ * 
+ * @return const uint8_t* SSID字符串
+ */
 const uint8_t * wifi_info_get_ssid(void)
 {
     return wifi_info.ssid;
 }
 
+/**
+ * @brief 设置Wi-Fi密码
+ * 
+ * @param password 密码字符串
+ * @return esp_err_t 设置结果，ESP_OK 表示成功，其他值表示失败
+ */
 esp_err_t wifi_info_set_pwd(const uint8_t *password)
 {
     memcpy(wifi_info.password, password, 64);
     return ESP_OK;
 }
 
+/**
+ * @brief 获取Wi-Fi密码
+ * 
+ * @return const uint8_t* 密码字符串
+ */
 const uint8_t * wifi_info_get_pwd(void)
 {
     return wifi_info.password;
 }
 
+/**
+ * @brief 设置Wi-Fi认证模式
+ * 
+ * @param authmode 认证模式
+ * @return esp_err_t 设置结果，ESP_OK 表示成功，其他值表示失败
+ */
 esp_err_t wifi_info_set_authmode(const wifi_auth_mode_t authmode)
 {
     wifi_info.authmode = authmode;
     return ESP_OK;
 }
 
+/**
+ * @brief 获取Wi-Fi认证模式
+ * 
+ * @return wifi_auth_mode_t 认证模式
+ */
 wifi_auth_mode_t wifi_info_get_authmode(void)
 {
     return wifi_info.authmode;

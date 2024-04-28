@@ -19,8 +19,13 @@
 #define TOUCH_I2C_CLK_SPEED_HZ      400000
 
 static bool i2c_initialized = false;
-SemaphoreHandle_t touch_mux = NULL;
+SemaphoreHandle_t touch_mux = NULL;     // 用于触摸中断信号量的互斥体
 
+/**
+ * @brief 初始化I2C总线。
+ * 
+ * @return esp_err_t 如果成功，则返回ESP_OK，否则返回错误代码。
+ */
 static esp_err_t touch_i2c_init(void)
 {
     /* I2C was initialized before */
@@ -44,6 +49,13 @@ static esp_err_t touch_i2c_init(void)
     return ESP_OK;
 }
 
+/**
+ * @brief 触摸中断回调函数。
+ * 
+ * 当触摸中断发生时，释放触摸中断信号量。
+ * 
+ * @param tp 触摸句柄。
+ */
 static void touch_callback(esp_lcd_touch_handle_t tp)
 {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
@@ -54,6 +66,12 @@ static void touch_callback(esp_lcd_touch_handle_t tp)
     }
 }
 
+/**
+ * @brief 创建一个新的触摸设备。
+ * 
+ * @param ret_touch 用于存储触摸句柄的指针。
+ * @return esp_err_t 如果成功，则返回ESP_OK，否则返回错误代码。
+ */
 esp_err_t touch_new(esp_lcd_touch_handle_t *ret_touch)
 {
     /* Initilize I2C */

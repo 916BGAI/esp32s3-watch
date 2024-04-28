@@ -11,8 +11,6 @@
 
 static const char *TAG = "TinyUSB";
 
-// static uint8_t buf[CONFIG_TINYUSB_CDC_RX_BUFSIZE + 1];
-
 /* TinyUSB descriptors
    ********************************************************************* */
 
@@ -98,12 +96,17 @@ static esp_err_t storage_init_spiflash(wl_handle_t *wl_handle);
 static void storage_mount_changed_cb(tinyusb_msc_event_t *event);
 static void msc_mount(void);
 // static void msc_unmount(void);
-// static void tinyusb_cdc_rx_callback(int itf, cdcacm_event_t *event);
-// static void tinyusb_cdc_line_state_changed_callback(int itf, cdcacm_event_t *event);
 
 #include <fcntl.h>
 #include "vfs_tinyusb.h"
 
+/**
+ * @brief 初始化FAT文件系统。
+ * 
+ * 初始化FAT文件系统，并挂载SPI闪存分区。
+ * 
+ * @return esp_err_t 如果成功，则返回ESP_OK，否则返回错误代码。
+ */
 esp_err_t fatfs_init(void)
 {
     ESP_LOGI(TAG, "Initializing fatfs...");
@@ -124,6 +127,11 @@ esp_err_t fatfs_init(void)
     return ESP_OK;
 }
 
+/**
+ * @brief 初始化USB。
+ * 
+ * @return esp_err_t 如果成功，则返回ESP_OK，否则返回错误代码。
+ */
 esp_err_t usb_init(void)
 {
     ESP_LOGI(TAG, "USB Composite initialization");
@@ -136,34 +144,14 @@ esp_err_t usb_init(void)
     };
     ESP_ERROR_CHECK(tinyusb_driver_install(&tusb_cfg));
 
-    // tinyusb_config_cdcacm_t acm_cfg = {
-    //     .usb_dev = TINYUSB_USBDEV_0,
-    //     .cdc_port = TINYUSB_CDC_ACM_0,
-    //     .rx_unread_buf_sz = 64,
-    //     .callback_rx = &tinyusb_cdc_rx_callback,
-    //     .callback_rx_wanted_char = NULL,
-    //     .callback_line_state_changed = NULL,
-    //     .callback_line_coding_changed = NULL
-    // };
-    //
-    // ESP_ERROR_CHECK(tusb_cdc_acm_init(&acm_cfg));
-    // /* the second way to register a callback */
-    // ESP_ERROR_CHECK(tinyusb_cdcacm_register_callback(
-    //                     TINYUSB_CDC_ACM_0,
-    //                     CDC_EVENT_LINE_STATE_CHANGED,
-    //                     &tinyusb_cdc_line_state_changed_callback));
-    // ESP_LOGI(TAG, "USB Composite initialization DONE");
-    //
-    // esp_tusb_init_console(TINYUSB_CDC_ACM_0);
-    //
-    // /* Minicom, screen, idf_monitor send CR when ENTER key is pressed */
-    // esp_vfs_tusb_cdc_set_rx_line_endings(ESP_LINE_ENDINGS_CR);
-    // /* Move the caret to the beginning of the next line on '\n' */
-    // esp_vfs_tusb_cdc_set_tx_line_endings(ESP_LINE_ENDINGS_LF);
-
     return ESP_OK;
 }
 
+/**
+ * @brief 停止USB。
+ * 
+ * @return esp_err_t 如果成功，则返回ESP_OK，否则返回错误代码。
+ */
 esp_err_t usb_deinit(void)
 {
     ESP_LOGI(TAG, "USB Composite deinitialization");
@@ -174,6 +162,12 @@ esp_err_t usb_deinit(void)
     return ESP_OK;
 }
 
+/**
+ * @brief 初始化SPI闪存。
+ * 
+ * @param wl_handle wear leveling 句柄。
+ * @return esp_err_t 如果成功，则返回ESP_OK，否则返回错误代码。
+ */
 static esp_err_t storage_init_spiflash(wl_handle_t *wl_handle)
 {
     ESP_LOGI(TAG, "Initializing wear levelling");
@@ -187,13 +181,21 @@ static esp_err_t storage_init_spiflash(wl_handle_t *wl_handle)
     return wl_mount(data_partition, wl_handle);
 }
 
-/* callback that is delivered when storage is mounted/unmounted by application. */
+/**
+ * @brief 存储挂载状态变化的回调函数。
+ * 
+ * 当应用程序挂载/卸载存储时，会触发此回调。
+ * 
+ * @param event 存储事件。
+ */
 static void storage_mount_changed_cb(tinyusb_msc_event_t *event)
 {
     ESP_LOGI(TAG, "Storage mounted to application: %s", event->mount_changed_data.is_mounted ? "Yes" : "No");
 }
 
-/* mount the partition and show all the files in BASE_PATH */
+/**
+ * @brief 在BASE_PATH路径下挂载存储设备。
+ */
 static void msc_mount(void)
 {
     ESP_LOGI(TAG, "Mount storage...");
@@ -227,30 +229,4 @@ static void msc_mount(void)
 //     }
 //     ESP_LOGI(TAG, "Unmount storage...");
 //     ESP_ERROR_CHECK(tinyusb_msc_storage_unmount());
-// }
-
-// static void tinyusb_cdc_rx_callback(int itf, cdcacm_event_t *event)
-// {
-//     /* initialization */
-//     size_t rx_size = 0;
-//
-//     /* read */
-//     esp_err_t ret = tinyusb_cdcacm_read(itf, buf, CONFIG_TINYUSB_CDC_RX_BUFSIZE, &rx_size);
-//     if (ret == ESP_OK) {
-//         ESP_LOGI(TAG, "Data from channel %d:", itf);
-//         ESP_LOG_BUFFER_HEXDUMP(TAG, buf, rx_size, ESP_LOG_INFO);
-//     } else {
-//         ESP_LOGE(TAG, "Read error");
-//     }
-//
-//     /* write back */
-//     tinyusb_cdcacm_write_queue(itf, buf, rx_size);
-//     tinyusb_cdcacm_write_flush(itf, 0);
-// }
-//
-// static void tinyusb_cdc_line_state_changed_callback(int itf, cdcacm_event_t *event)
-// {
-//     int dtr = event->line_state_changed_data.dtr;
-//     int rts = event->line_state_changed_data.rts;
-//     ESP_LOGI(TAG, "Line state changed on channel %d: DTR:%d, RTS:%d", itf, dtr, rts);
 // }

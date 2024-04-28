@@ -14,10 +14,11 @@
 
 #define TAG "DISPLAY"
 
-static lv_disp_t *disp;
-static lv_indev_t *disp_indev;
-static esp_lcd_touch_handle_t tp;
+static lv_disp_t *disp;             /*!< 全局变量，指向 LVGL 显示器的指针 */
+static lv_indev_t *disp_indev;      /*!< 全局变量，指向 LVGL 输入设备的指针 */
+static esp_lcd_touch_handle_t tp;   /*!< 触摸屏句柄 */
 
+// 亮度配置结构体
 typedef struct {
     const char *namespace;
     nvs_handle_t handle;
@@ -25,6 +26,7 @@ typedef struct {
     uint32_t percent;
 } brightness_config_t;
 
+// 亮度配置对象
 static brightness_config_t brightness_config = {
     .namespace = "brightness",
     .handle = 0,
@@ -32,6 +34,12 @@ static brightness_config_t brightness_config = {
     .percent = 0
 };
 
+/**
+ * @brief 设置显示屏亮度。
+ * 
+ * @param brightness_percent 要设置的亮度百分比。
+ * @return esp_err_t 如果成功，则返回 ESP_OK，否则返回错误代码。
+ */
 esp_err_t display_brightness_set(uint32_t brightness_percent)
 {
     brightness_config.percent = brightness_percent;
@@ -44,6 +52,11 @@ esp_err_t display_brightness_set(uint32_t brightness_percent)
     return ESP_OK;
 }
 
+/**
+ * @brief 将当前亮度保存到 NVS 中。
+ * 
+ * @return esp_err_t 如果成功，则返回 ESP_OK，否则返回错误代码。
+ */
 esp_err_t display_brightness_save_to_nvs(void)
 {
     nvs_open(brightness_config.namespace, NVS_READWRITE, &brightness_config.handle);
@@ -54,11 +67,21 @@ esp_err_t display_brightness_save_to_nvs(void)
     return ESP_OK;
 }
 
+/**
+ * @brief 获取当前显示屏亮度。
+ * 
+ * @return uint32_t 当前亮度百分比。
+ */
 uint32_t display_brightness_get(void)
 {
     return brightness_config.percent;
 }
 
+/**
+ * @brief 从 NVS 中获取显示屏亮度设置。
+ * 
+ * @return esp_err_t 如果成功，则返回 ESP_OK；如果未找到，则返回 ESP_FAIL。
+ */
 esp_err_t display_brightness_obtain_from_nvs(void)
 {
     nvs_open(brightness_config.namespace, NVS_READONLY, &brightness_config.handle);
@@ -72,6 +95,11 @@ esp_err_t display_brightness_obtain_from_nvs(void)
     }
 }
 
+/**
+ * @brief 初始化显示屏亮度。
+ * 
+ * @return esp_err_t 如果成功，则返回 ESP_OK，否则返回错误代码。
+ */
 static esp_err_t display_brightness_init(void)
 {
     const ledc_channel_config_t LCD_backlight_channel = {
@@ -108,6 +136,14 @@ static esp_err_t display_brightness_init(void)
     return ESP_OK;
 }
 
+/**
+ * @brief 初始化新的显示屏。
+ * 
+ * @param max_transfer_sz SPI 的最大传输大小。
+ * @param ret_panel 用于存储面板句柄的指针。
+ * @param ret_io 用于存储 IO 句柄的指针。
+ * @return esp_err_t 如果成功，则返回 ESP_OK，否则返回错误代码。
+ */
 static esp_err_t display_new(const int max_transfer_sz, esp_lcd_panel_handle_t *ret_panel,
                              esp_lcd_panel_io_handle_t *ret_io)
 {
@@ -164,6 +200,11 @@ err:
     return ret;
 }
 
+/**
+ * @brief 初始化 LCD 屏幕。
+ * 
+ * @return lv_disp_t* 指向初始化的 LVGL 显示器的指针。
+ */
 static lv_disp_t *display_lcd_init(void)
 {
     esp_lcd_panel_io_handle_t io_handle = NULL;
@@ -197,6 +238,12 @@ static lv_disp_t *display_lcd_init(void)
     return lvgl_port_add_disp(&disp_cfg);
 }
 
+/**
+ * @brief 初始化显示屏的输入设备。
+ * 
+ * @param disp 指向初始化的 LVGL 显示器的指针。
+ * @return lv_indev_t* 指向初始化的 LVGL 输入设备的指针。
+ */
 static lv_indev_t *display_indev_init(lv_disp_t *disp)
 {
     ESP_ERROR_CHECK(touch_new(&tp));
@@ -211,6 +258,11 @@ static lv_indev_t *display_indev_init(lv_disp_t *disp)
     return lvgl_port_add_touch(&touch_cfg);
 }
 
+/**
+ * @brief 初始化显示器和 LVGL。
+ * 
+ * @return lv_disp_t* 指向初始化的 LVGL 显示器的指针。
+ */
 lv_disp_t *display_init(void)
 {
     const lvgl_port_cfg_t lvgl_cfg = ESP_LVGL_PORT_INIT_CONFIG();
