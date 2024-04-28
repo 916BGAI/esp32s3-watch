@@ -1,3 +1,8 @@
+/**
+ * @file display.h
+ * @brief 显示屏控制器头文件。
+ */
+
 #pragma once
 
 #ifdef __cplusplus

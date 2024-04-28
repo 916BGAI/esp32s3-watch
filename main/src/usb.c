@@ -1,3 +1,8 @@
+/**
+ * @file usb.c
+ * @brief USB Mass Storage Class (MSC)实现文件。
+ */
+
 #include <errno.h>
 #include <dirent.h>
 #include "esp_console.h"

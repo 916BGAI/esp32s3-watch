@@ -1,3 +1,8 @@
+/**
+ * @file lc76g.c
+ * @brief lc76g初始化功能的实现。
+ */
+
 #include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"

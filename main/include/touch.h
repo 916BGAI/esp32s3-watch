@@ -1,3 +1,8 @@
+/**
+ * @file touch.h
+ * @brief 包含了触摸屏相关函数的声明。
+ */
+
 #pragma once
 
 #ifdef __cplusplus

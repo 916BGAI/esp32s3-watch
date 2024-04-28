@@ -1,3 +1,8 @@
+/**
+ * @file lc76g.h
+ * @brief lc76g初始化头文件。
+ */
+
 #pragma once
 
 #ifdef __cplusplus

@@ -1,3 +1,8 @@
+/**
+ * @file wifi.h
+ * @brief Wi-Fi模块头文件，包含Wi-Fi的函数声明。
+ */
+
 #pragma once
 
 #ifdef __cplusplus

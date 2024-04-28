@@ -1,15 +1,23 @@
+/**
+ * @file ui_menu_screen.c
+ * @brief 定义菜单屏幕相关函数。
+ */
+
 #include "../ui.h"
 #include "ui_clock_screen.h"
 #include "ui_menu_screen.h"
 #include "ui_timer_screen.h"
 #include "wifi.h"
 
-menu_screen_t *menu_screen;
+menu_screen_t *menu_screen;         /**< 指向菜单屏幕的指针 */
 
 static void app_reg(app_info_t *app_info);
 static void ui_event_menu_screen(lv_event_t *e);
 static void app_button_event_cb(lv_event_t *e);
 
+/**
+ * @brief 初始化菜单屏幕。
+ */
 void ui_menu_screen_init(void)
 {
     menu_screen = malloc(sizeof(menu_screen_t));
@@ -21,6 +29,7 @@ void ui_menu_screen_init(void)
     lv_obj_set_style_bg_opa(menu_screen->tv, LV_OPA_0, LV_PART_SCROLLBAR | LV_STATE_SCROLLED);
     lv_obj_set_style_text_font(menu_screen->tv, SarasaMonoB_18, LV_PART_MAIN | LV_STATE_DEFAULT);
 
+    // 添加设置应用
     static app_info_t app1 = {
         .id = 1,
         .name = "设置",
@@ -28,6 +37,7 @@ void ui_menu_screen_init(void)
     };
     app_reg(&app1);
 
+    // 添加时钟应用
     static app_info_t app2 = {
         .id = 2,
         .name = "时钟",
@@ -35,6 +45,7 @@ void ui_menu_screen_init(void)
     };
     app_reg(&app2);
 
+    // 添加天气应用
     static app_info_t app3 = {
         .id = 3,
         .name = "天气",
@@ -42,6 +53,7 @@ void ui_menu_screen_init(void)
     };
     app_reg(&app3);
 
+    // 添加计时应用
     static app_info_t app4 = {
         .id = 4,
         .name = "计时",
@@ -49,6 +61,7 @@ void ui_menu_screen_init(void)
     };
     app_reg(&app4);
 
+    // 添加定位应用
     static app_info_t app5 = {
         .id = 5,
         .name = "定位",
@@ -56,6 +69,7 @@ void ui_menu_screen_init(void)
     };
     app_reg(&app5);
 
+    // 添加更多应用
     static app_info_t app6 = {
         .id = 6,
         .name = "更多",
@@ -66,6 +80,11 @@ void ui_menu_screen_init(void)
     lv_obj_add_event_cb(menu_screen->screen, ui_event_menu_screen, LV_EVENT_ALL, NULL);
 }
 
+/**
+ * @brief 注册应用程序。
+ * 
+ * @param app_info 应用程序信息结构体指针
+ */
 void app_reg(app_info_t *app_info)
 {
     static uint8_t tile_index = 0;
@@ -89,6 +108,11 @@ void app_reg(app_info_t *app_info)
 }
 
 extern clock_screen_t clock_screen;
+/**
+ * @brief 菜单屏幕的事件处理函数。
+ * 
+ * @param e 事件指针
+ */
 void ui_event_menu_screen(lv_event_t *e)
 {
     const lv_event_code_t event_code = lv_event_get_code(e);
@@ -101,8 +125,13 @@ void ui_event_menu_screen(lv_event_t *e)
     }
 }
 
-extern clock_screen_t clock_screen;
-extern timer_screen_t *timer_screen;
+extern clock_screen_t clock_screen;                 /**< 指向时钟屏幕的指针 */
+extern timer_screen_t *timer_screen;                /**< 指向计时屏幕的指针 */
+/**
+ * @brief 应用程序按钮事件的回调函数。
+ * 
+ * @param e 事件指针
+ */
 static void app_button_event_cb(lv_event_t *e)
 {
     const lv_event_code_t event_code = lv_event_get_code(e);

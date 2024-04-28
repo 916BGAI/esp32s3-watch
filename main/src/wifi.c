@@ -1,3 +1,8 @@
+/**
+ * @file wifi.c
+ * @brief Wi-Fi模块实现文件，包含Wi-Fi的初始化、启动、销毁、状态获取和配置保存等功能函数。
+ */
+
 #include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"

@@ -1,3 +1,8 @@
+/**
+ * @file ui.h
+ * @brief 该文件包含与用户界面相关的函数和声明。
+ */
+
 #pragma once
 
 #ifdef __cplusplus
@@ -37,6 +42,9 @@ extern lv_font_t *SarasaMonoB_30;
 
 void ui_init(void);
 
+/**
+ * @brief 初始化 Sarasa Mono 字体。
+ */
 static inline void lv_font_init()
 {
     SarasaMonoR_16 = lv_font_load("A:fonts/SarasaMonoSC_regular_16.bin");

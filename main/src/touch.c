@@ -1,3 +1,8 @@
+/**
+ * @file touch.c
+ * @brief 触摸功能源文件。
+ */
+
 #include "driver/gpio.h"
 #include "driver/i2c.h"
 #include "esp_err.h"

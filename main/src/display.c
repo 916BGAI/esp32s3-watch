@@ -1,3 +1,8 @@
+/**
+ * @file display.c
+ * @brief 显示屏控制器源文件。
+ */
+
 #include "driver/gpio.h"
 #include "driver/ledc.h"
 #include "driver/spi_master.h"

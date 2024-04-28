@@ -1,3 +1,8 @@
+/**
+ * @file usb.h
+ * @brief 包含了用于文件系统和USB初始化的函数声明。
+ */
+
 #pragma once
 
 #ifdef __cplusplus
