@@ -1,3 +1,8 @@
+/**
+ * @file ui_weather_screen.c
+ * @brief 天气界面UI实现
+ */
+
 #include "../ui.h"
 #include "ui_menu_screen.h"
 #include "ui_weather_screen.h"
@@ -10,6 +15,13 @@
 #include "zutil.h"
 #include "cJSON.h"
 
+/**
+ * @brief 检查条件并记录错误的宏
+ * 
+ * @param a 条件表达式
+ * @param str 错误信息字符串
+ * @param ret_val 返回值
+ */
 #define CHECK(a, str, ret_val)                                        \
     do {                                                              \
         if (!(a)) {                                                   \
@@ -17,26 +29,26 @@
         }                                                             \
     } while (0)
 
-#define MAX_HTTP_RECV_BUFFER            (1024)
-#define _UA_                            "esp32s3"
-#define QWEATHER_REQUEST_KEY_LEN        (32)
-#define _KEY_VALUE_                     "140d681da1cc4978be5a17cd8af9f125"
-#define _KEY_                           "key=" _KEY_VALUE_
+#define MAX_HTTP_RECV_BUFFER            (1024)                                  /**< 最大HTTP接收缓冲区大小 */
+#define _UA_                            "esp32s3"                               /**< 用户代理字符串 */
+#define QWEATHER_REQUEST_KEY_LEN        (32)                                    /**< QWeather请求密钥长度 */
+#define _KEY_VALUE_                     "140d681da1cc4978be5a17cd8af9f125"      /**< QWeather请求密钥值 */
+#define _KEY_                           "key=" _KEY_VALUE_                      /**< 完整的密钥字符串 */
 
-#define LOCATION_ZHENGZHOU               "101180101"
-#define LOCATION_BEIJING                 "101010100"
-#define LOCATION_NEWYORK                 "1E98E"
+#define LOCATION_ZHENGZHOU               "101180101"                            /**< 郑州的城市ID */
+#define LOCATION_BEIJING                 "101010100"                            /**< 北京的城市ID */
+#define LOCATION_NEWYORK                 "1E98E"                                /**< 纽约的城市ID */
 
-#define _OPTION_                        "location=101020100&gzip=n&lang=zh"
-#define _OPTION_MULTI                   "location=%s&lang=zh"
+#define _OPTION_                        "location=101020100&gzip=n&lang=zh"     /**< 默认查询选项 */
+#define _OPTION_MULTI                   "location=%s&lang=zh"                   /**< 带有变量位置的查询选项 */
 
-#define WEATHER_SERVER      "devapi.qweather.com"
+#define WEATHER_SERVER      "devapi.qweather.com"                               /**< 天气服务器域名 */
 #define WEB_URL_NOW         "https://" WEATHER_SERVER "/v7/weather/now?" _OPTION_MULTI "&" _KEY_
 #define WEB_URL_AIR         "https://" WEATHER_SERVER "/v7/air/now?"     _OPTION_ "&" _KEY_
 
 typedef struct {
-    int id;
-    const char *icon;
+    int id;                 /**< 天气ID */
+    const char *icon;       /**< 天气图标 */
 } weather_icon_t;
 
 static weather_screen_t *weather_screen;
@@ -54,8 +66,12 @@ static esp_err_t weather_parse_now(char *buffer, location_num_t location);
 static int network_gzip_decompress(void *in_buf, size_t in_size, void *out_buf, size_t *out_size, size_t out_buf_size);
 static void ui_event_weather_screen(lv_event_t *e);
 
+/**
+ * @brief 初始化天气界面UI
+ */
 void ui_weather_screen_init(void)
 {
+    // 分配天气界面结构体内存
     weather_screen = malloc(sizeof(weather_screen_t));
 
     cJSON_Hooks hooks = {
@@ -64,11 +80,13 @@ void ui_weather_screen_init(void)
     };
     cJSON_InitHooks(&hooks);
 
+    // 启动天气应用并请求天气信息
     weather_start();
     weather_request(LOCATION_NUM_ZHENGZHOU);
     weather_request(LOCATION_NUM_BEIJING);
     weather_request(LOCATION_NUM_NEWYORK);
 
+    // 创建天气界面对象
     weather_screen->screen = lv_obj_create(NULL);
     weather_screen->tv = lv_tileview_create(weather_screen->screen);
     lv_obj_set_style_bg_color(weather_screen->tv, lv_color_hex(0xDDE4FB), 0);
@@ -81,6 +99,7 @@ void ui_weather_screen_init(void)
     weather_screen->tile2 = lv_tileview_add_tile(weather_screen->tv, 1, 0, LV_DIR_LEFT | LV_DIR_RIGHT);
     weather_screen->tile3 = lv_tileview_add_tile(weather_screen->tv, 2, 0, LV_DIR_LEFT);
 
+    // 在各个界面上创建天气信息
     lv_obj_t * location_label = lv_label_create(weather_screen->tile1);
     lv_obj_set_style_text_font(location_label, SarasaMonoB_30, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_label_set_text(location_label, "郑州市");
@@ -115,27 +134,55 @@ void ui_weather_screen_init(void)
     weather_reg(LOCATION_NUM_BEIJING, weather_screen->tile2);
     weather_reg(LOCATION_NUM_NEWYORK, weather_screen->tile3);
 
+    // 为天气界面对象添加事件处理函数
     lv_obj_add_event_cb(weather_screen->screen, ui_event_weather_screen, LV_EVENT_ALL, NULL);
+    // 加载天气界面
     lv_scr_load_anim(weather_screen->screen, LV_SCR_LOAD_ANIM_FADE_ON, 300, 0, true);
 }
 
+/**
+ * @brief SPI RAM分配函数
+ * 
+ * @param size 分配的大小
+ * @return void* 分配的内存地址
+ */
 static void* spiram_malloc(size_t size)
 {
     return heap_caps_malloc(size, MALLOC_CAP_SPIRAM);
 }
 
+/**
+ * @brief Zlib分配函数
+ * 
+ * @param opaque 操作指针
+ * @param items 单位大小
+ * @param size 单位数量
+ * @return voidpf 分配的内存地址
+ */
 static voidpf zalloc(voidpf opaque, uInt items, uInt size)
 {
     (void)opaque;
     return heap_caps_malloc(items * size, MALLOC_CAP_SPIRAM);
 }
 
+/**
+ * @brief Zlib释放函数
+ * 
+ * @param opaque 操作指针
+ * @param address 内存地址
+ */
 static void zfree(voidpf opaque, voidpf address)
 {
     (void)opaque;
     free(address);
 }
 
+/**
+ * @brief 注册位置的天气信息
+ * 
+ * @param location 位置编号
+ * @param tile 界面对象
+ */
 static void weather_reg(location_num_t location, lv_obj_t *tile)
 {
     weather_screen->label.obsTime = lv_label_create(tile);
@@ -195,6 +242,11 @@ static void weather_reg(location_num_t location, lv_obj_t *tile)
     lv_obj_align_to(humidity_text, weather_screen->label.humidity, LV_ALIGN_OUT_BOTTOM_MID, 0, 7);
 }
 
+/**
+ * @brief 启动天气应用
+ * 
+ * @return esp_err_t 返回状态
+ */
 static esp_err_t weather_start(void)
 {
     CHECK(QWEATHER_REQUEST_KEY_LEN == strlen(_KEY_VALUE_),
@@ -227,6 +279,12 @@ static esp_err_t weather_start(void)
     return ESP_OK;
 }
 
+/**
+ * @brief 请求位置的天气信息
+ * 
+ * @param location 位置编号
+ * @return esp_err_t 返回状态
+ */
 static esp_err_t weather_request(location_num_t location)
 {
     char *cityID = NULL;
@@ -312,6 +370,13 @@ static esp_err_t weather_request(location_num_t location)
     return ESP_OK;
 }
 
+/**
+ * @brief 解析当前天气数据
+ * 
+ * @param buffer JSON数据缓冲区
+ * @param location 位置编号
+ * @return esp_err_t 返回状态
+ */
 static esp_err_t weather_parse_now(char *buffer, location_num_t location)
 {
     cJSON *json = cJSON_Parse(buffer);
@@ -363,6 +428,16 @@ static esp_err_t weather_parse_now(char *buffer, location_num_t location)
     return ESP_OK;
 }
 
+/**
+ * @brief 解压网络gzip数据
+ * 
+ * @param in_buf 输入数据缓冲区
+ * @param in_size 输入数据大小
+ * @param out_buf 输出数据缓冲区
+ * @param out_size 输出数据大小
+ * @param out_buf_size 输出缓冲区大小
+ * @return int 返回状态
+ */
 static int network_gzip_decompress(void *in_buf, size_t in_size, void *out_buf, size_t *out_size, size_t out_buf_size)
 {
     int err;
@@ -398,6 +473,11 @@ static int network_gzip_decompress(void *in_buf, size_t in_size, void *out_buf, 
 }
 
 extern menu_screen_t *menu_screen;
+/**
+ * @brief 天气界面的UI事件处理函数
+ * 
+ * @param e 事件指针
+ */
 static void ui_event_weather_screen(lv_event_t *e)
 {
     const lv_event_code_t event_code = lv_event_get_code(e);

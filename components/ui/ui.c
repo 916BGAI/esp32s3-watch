@@ -16,7 +16,7 @@ lv_font_t *SarasaMonoB_30;      /**< 30像素 粗体 */
 /**
  * @brief 初始化用户界面。
  * 
- * 此函数初始化LittlevGL库，设置显示主题，并初始化特定的UI元素。
+ * 此函数初始化LVGL库，设置显示主题，并初始化特定的UI元素。
  */
 void ui_init(void)
 {

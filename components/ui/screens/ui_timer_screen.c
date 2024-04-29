@@ -1,3 +1,8 @@
+/**
+ * @file ui_timer_screen.c
+ * @brief 计时界面UI实现
+ */
+
 #include "../ui.h"
 #include "ui_menu_screen.h"
 #include "ui_timer_screen.h"
@@ -15,14 +20,20 @@ static void btn_event_cb(lv_event_t *e);
 static void timer_cb(lv_timer_t *timer);
 static void ui_event_timer_screen(lv_event_t *e);
 
+/**
+ * @brief 初始化计时界面UI
+ */
 void ui_timer_screen_init(void)
 {
+    // 如果计时屏幕为空，则分配内存
     if (timer_screen == NULL) {
         timer_screen = malloc(sizeof(timer_screen_t));
     }
 
+    // 创建计时界面对象
     timer_screen->screen = lv_obj_create(NULL);
 
+    // 创建并设置UI元素（标签、滚动轮、按钮等）
     lv_obj_t * label_text = lv_label_create(timer_screen->screen);
     lv_obj_set_style_text_font(label_text, SarasaMonoB_30, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_label_set_text(label_text, "计时");
@@ -142,9 +153,15 @@ void ui_timer_screen_init(void)
     lv_obj_align_to(timer_screen->label_time, timer_screen->roller.min, LV_ALIGN_CENTER, 0, 0);
     lv_obj_add_flag(timer_screen->label_time, LV_OBJ_FLAG_HIDDEN);
 
+    // 添加事件处理函数到对象
     lv_obj_add_event_cb(timer_screen->screen, ui_event_timer_screen, LV_EVENT_ALL, NULL);
 }
 
+/**
+ * @brief 遮罩事件回调函数
+ * 
+ * @param e 事件指针
+ */
 static void mask_event_cb(lv_event_t * e)
 {
     lv_event_code_t code = lv_event_get_code(e);
@@ -198,6 +215,11 @@ static void mask_event_cb(lv_event_t * e)
     }
 }
 
+/**
+ * @brief 按钮事件回调函数
+ * 
+ * @param e 事件指针
+ */
 static void btn_event_cb(lv_event_t *e)
 {
     static lv_obj_t *label_time_text = NULL;
@@ -267,6 +289,11 @@ static void btn_event_cb(lv_event_t *e)
     }
 }
 
+/**
+ * @brief 定时器回调函数
+ * 
+ * @param timer 定时器指针
+ */
 static void timer_cb(lv_timer_t *timer)
 {
     lv_label_set_text_fmt(timer_screen->label_time, "%02d:%02d:%02d", timer_config.hour, timer_config.min,
@@ -298,6 +325,11 @@ static void timer_cb(lv_timer_t *timer)
 }
 
 extern menu_screen_t *menu_screen;
+/**
+ * @brief 计时器界面的UI事件处理函数
+ * 
+ * @param e 事件指针
+ */
 static void ui_event_timer_screen(lv_event_t *e)
 {
     const lv_event_code_t event_code = lv_event_get_code(e);
@@ -318,6 +350,11 @@ static void ui_event_timer_screen(lv_event_t *e)
     }
 }
 
+/**
+ * @brief 获取计时器配置信息
+ * 
+ * @return timer_config_t 计时器配置
+ */
 timer_config_t get_timer_config(void)
 {
     return timer_config;
