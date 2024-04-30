@@ -267,7 +267,6 @@ static void btn_event_cb(lv_event_t *e)
         lv_img_set_src(btn_img, "A:images/timer/pause.bin");
         lv_timer_resume(timer_screen->timer);
     } else if (target == timer_screen->btn.stop) {
-        timer_config.status = STOP;
         lv_obj_add_flag(timer_screen->btn.pause, LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(timer_screen->btn.stop, LV_OBJ_FLAG_HIDDEN);
         lv_obj_add_flag(timer_screen->label_time, LV_OBJ_FLAG_HIDDEN);
@@ -284,7 +283,11 @@ static void btn_event_cb(lv_event_t *e)
         lv_roller_set_selected(timer_screen->roller.min, 0, LV_ANIM_OFF);
         lv_roller_set_selected(timer_screen->roller.sec, 0, LV_ANIM_OFF);
 
-        lv_timer_del(timer_screen->timer);
+        if (timer_config.status != STOP) {
+            lv_timer_del(timer_screen->timer);
+            timer_config.status = STOP;
+        }
+
         lv_obj_del(label_time_text);
     }
 }
