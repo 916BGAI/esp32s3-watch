@@ -1,3 +1,8 @@
+/**
+ * @file ui_brightness_app.c
+ * @brief 亮度调节应用程序功能
+ */
+
 #include "lvgl.h"
 #include "ui_helpers.h"
 #include "ui_options_screen.h"
@@ -9,6 +14,10 @@ brightness_app_t *brightness_app;
 
 static void ret_button_event_callback(lv_event_t *e);
 
+/**
+ * @brief 滑块事件回调函数
+ * @param e 事件指针
+ */
 static void slider_event_cb(lv_event_t *e)
 {
     brightness_app->slider = lv_event_get_target(e);
@@ -22,6 +31,10 @@ static void slider_event_cb(lv_event_t *e)
     lvgl_port_unlock();
 }
 
+/**
+ * @brief 亮度事件回调函数
+ * @param e 事件指针
+ */
 void brightness_event_callback(lv_event_t *e)
 {
     brightness_app = malloc(sizeof(brightness_app_t));
@@ -102,6 +115,10 @@ void brightness_event_callback(lv_event_t *e)
     lv_obj_add_style(brightness_app->slider, &brightness_app->style_pressed_color, LV_PART_KNOB | LV_STATE_PRESSED);
 }
 
+/**
+ * @brief 返回按钮事件回调函数
+ * @param e 事件指针
+ */
 static void ret_button_event_callback(lv_event_t *e)
 {
     options_screen_t *options_screen = lv_event_get_user_data(e);

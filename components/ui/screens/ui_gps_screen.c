@@ -1,3 +1,8 @@
+/**
+ * @file ui_gps_screen.c
+ * @brief GPS屏幕界面功能
+ */
+
 #include "../ui.h"
 #include "lc76g.h"
 #include "ui_menu_screen.h"
@@ -10,6 +15,9 @@ static gps_t gps;
 static void timer_cb(lv_timer_t *timer);
 static void ui_event_gps_screen(lv_event_t *e);
 
+/**
+ * @brief GPS屏幕初始化函数
+ */
 void ui_gps_screen_init(void)
 {
     lc76g_init();
@@ -83,6 +91,10 @@ void ui_gps_screen_init(void)
     lv_scr_load_anim(gps_screen->screen, LV_SCR_LOAD_ANIM_FADE_ON, 300, 0, true);
 }
 
+/**
+ * @brief 定时器回调函数，用于更新GPS信息
+ * @param timer 定时器对象
+ */
 static void timer_cb(lv_timer_t *timer)
 {
     char longitude[12], latitude[12], altitude[8], speed[12];
@@ -101,6 +113,10 @@ static void timer_cb(lv_timer_t *timer)
 }
 
 extern menu_screen_t *menu_screen;
+/**
+ * @brief GPS屏幕事件处理函数
+ * @param e 事件对象
+ */
 static void ui_event_gps_screen(lv_event_t *e)
 {
     const lv_event_code_t event_code = lv_event_get_code(e);

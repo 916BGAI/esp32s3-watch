@@ -1,3 +1,8 @@
+/**
+ * @file ui_brightness_app.h
+ * @brief 亮度控制应用程序的头文件
+ */
+
 #pragma once
 
 #ifdef __cplusplus
