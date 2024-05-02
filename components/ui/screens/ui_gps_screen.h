@@ -1,3 +1,8 @@
+/**
+ * @file ui_gps_screen.c
+ * @brief GPS屏幕界面功能头文件
+ */
+
 #pragma once
 
 #ifdef __cplusplus

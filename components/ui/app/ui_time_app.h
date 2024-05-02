@@ -1,3 +1,8 @@
+/**
+ * @file ui_time_app.h
+ * @brief 时间应用程序的头文件
+ */
+
 #pragma once
 
 #ifdef __cplusplus

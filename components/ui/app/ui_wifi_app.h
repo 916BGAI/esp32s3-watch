@@ -1,3 +1,8 @@
+/**
+ * @file ui_wifi_app.h
+ * @brief Wi-Fi 应用程序的头文件
+ */
+
 #pragma once
 
 #ifdef __cplusplus

@@ -45,7 +45,8 @@
         "esp_lcd_touch.h": "c",
         "ui.h": "c",
         "vfs_tinyusb.h": "c",
-        "esp_err.h": "c"
+        "esp_err.h": "c",
+        "ui_brightness_app.h": "c"
     },
     "cmake.configureOnOpen": false
 }

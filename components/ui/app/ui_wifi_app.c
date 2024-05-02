@@ -1,3 +1,8 @@
+/**
+ * @file ui_wifi_app.c
+ * @brief Wi-Fi应用程序功能
+ */
+
 #include "lvgl.h"
 #include "ui_helpers.h"
 #include "ui_options_screen.h"
@@ -19,6 +24,10 @@ static void add_msgbox_dropdown_event_cb(lv_event_t * e);
 static void add_msgbox_btn_event_cb(lv_event_t *e);
 static void ui_event_return(lv_event_t *e);
 
+/**
+ * @brief Wi-Fi事件回调函数
+ * @param e 事件指针
+ */
 void wifi_event_callback(lv_event_t *e)
 {
     wifi_app = malloc(sizeof(wifi_app_t));
@@ -119,6 +128,10 @@ void wifi_event_callback(lv_event_t *e)
     }
 }
 
+/**
+ * @brief Wi-Fi开关事件回调函数
+ * @param e 事件指针
+ */
 static void sw_event_cb(lv_event_t *e)
 {
     options_screen_t *options_screen = lv_event_get_user_data(e);
@@ -149,6 +162,10 @@ static void sw_event_cb(lv_event_t *e)
     }
 }
 
+/**
+ * @brief 已保存的网络长按事件回调函数
+ * @param e 事件指针
+ */
 static void saved_event_cb(lv_event_t *e)
 {
     const lv_event_code_t code = lv_event_get_code(e);
@@ -171,6 +188,10 @@ static void saved_event_cb(lv_event_t *e)
     }
 }
 
+/**
+ * @brief 已保存的网络消息框事件回调函数
+ * @param e 事件指针
+ */
 static void saved_msgbox_event_cb(lv_event_t *e)
 {
     lv_obj_t *mbox = lv_event_get_current_target(e);
@@ -201,6 +222,10 @@ static void saved_msgbox_event_cb(lv_event_t *e)
     }
 }
 
+/**
+ * @brief 添加网络长按事件回调函数
+ * @param e 事件指针
+ */
 static void add_event_cb(lv_event_t *e)
 {
     const lv_event_code_t code = lv_event_get_code(e);
@@ -290,6 +315,10 @@ static void add_event_cb(lv_event_t *e)
     }
 }
 
+/**
+ * @brief 添加网络消息框文本区域事件回调函数
+ * @param e 事件指针
+ */
 static void add_msgbox_ta_event_cb(lv_event_t * e)
 {
     lv_event_code_t code = lv_event_get_code(e);
@@ -315,6 +344,10 @@ static void add_msgbox_ta_event_cb(lv_event_t * e)
     }
 }
 
+/**
+ * @brief 添加网络消息框下拉列表事件回调函数
+ * @param e 事件指针
+ */
 static void add_msgbox_dropdown_event_cb(lv_event_t * e)
 {
     const lv_event_code_t code = lv_event_get_code(e);
@@ -334,6 +367,10 @@ static void add_msgbox_dropdown_event_cb(lv_event_t * e)
     }
 }
 
+/**
+ * @brief 添加网络消息框按钮事件回调函数
+ * @param e 事件指针
+ */
 static void add_msgbox_btn_event_cb(lv_event_t *e)
 {
     const lv_obj_t *target = lv_event_get_target(e);
@@ -390,12 +427,20 @@ static void add_msgbox_btn_event_cb(lv_event_t *e)
     }
 }
 
+/**
+ * @brief 添加网络消息框事件回调函数
+ * @param e 事件指针
+ */
 static void add_msgbox_event_cb(lv_event_t *e)
 {
     lv_obj_t * kb = lv_event_get_user_data(e);
     lv_obj_del_async(kb);
 }
 
+/**
+ * @brief UI返回事件回调函数
+ * @param e 事件指针
+ */
 static void ui_event_return(lv_event_t *e)
 {
     const lv_event_code_t event_code = lv_event_get_code(e);

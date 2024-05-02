@@ -1,3 +1,8 @@
+/**
+ * @file ui_time_app.c
+ * @brief 时间应用程序功能
+ */
+
 #include <time.h>
 #include <sys/time.h>
 #include <esp_lvgl_port.h>
@@ -22,6 +27,10 @@ static void time_event_cb(lv_event_t *e);
 static void msgbox_event_cb(lv_event_t *e);
 static void ui_event_return(lv_event_t *e);
 
+/**
+ * @brief 时间事件回调函数
+ * @param e 事件指针
+ */
 void time_event_callback(lv_event_t *e)
 {
     time_app = malloc(sizeof(time_app_t));
@@ -117,6 +126,10 @@ void time_event_callback(lv_event_t *e)
 
 }
 
+/**
+ * @brief 自动设置时间事件回调函数
+ * @param e 事件指针
+ */
 static void sw_event_cb(lv_event_t *e)
 {
     const lv_event_code_t code = lv_event_get_code(e);
@@ -159,6 +172,10 @@ static void sw_event_cb(lv_event_t *e)
     }
 }
 
+/**
+ * @brief 时间设置事件回调函数
+ * @param e 事件指针
+ */
 static void time_event_cb(lv_event_t *e)
 {
     const lv_obj_t *target = lv_event_get_target(e);
@@ -233,6 +250,10 @@ static void time_event_cb(lv_event_t *e)
     lv_obj_center(label);
 }
 
+/**
+ * @brief 消息框事件回调函数
+ * @param e 事件指针
+ */
 static void msgbox_event_cb(lv_event_t *e)
 {
     struct timeval new_time;
@@ -276,6 +297,10 @@ static void msgbox_event_cb(lv_event_t *e)
     lv_msgbox_close(mbox);
 }
 
+/**
+ * @brief UI返回事件回调函数
+ * @param e 事件指针
+ */
 static void ui_event_return(lv_event_t *e)
 {
     const lv_event_code_t event_code = lv_event_get_code(e);

@@ -1,3 +1,8 @@
+/**
+ * @file ui_usb_app.h
+ * @brief USB 应用程序的头文件
+ */
+
 #pragma once
 
 #ifdef __cplusplus

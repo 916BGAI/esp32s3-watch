@@ -1,3 +1,8 @@
+/**
+ * @file ui_usb_app.c
+ * @brief USB应用程序功能
+ */
+
 #include "lvgl.h"
 #include "ui_helpers.h"
 #include "ui_options_screen.h"
@@ -12,6 +17,10 @@ static bool usb_status = false;
 static void sw_event_cb(lv_event_t *e);
 static void ui_event_return(lv_event_t *e);
 
+/**
+ * @brief USB事件回调函数
+ * @param e 事件指针
+ */
 void usb_event_callback(lv_event_t *e)
 {
     usb_app = malloc(sizeof(usb_app_t));
@@ -54,6 +63,10 @@ void usb_event_callback(lv_event_t *e)
     }
 }
 
+/**
+ * @brief USB开关事件回调函数
+ * @param e 事件指针
+ */
 static void sw_event_cb(lv_event_t *e)
 {
     options_screen_t *options_screen = lv_event_get_user_data(e);
@@ -75,6 +88,10 @@ static void sw_event_cb(lv_event_t *e)
     }
 }
 
+/**
+ * @brief UI返回事件回调函数
+ * @param e 事件指针
+ */
 static void ui_event_return(lv_event_t *e)
 {
     const lv_event_code_t event_code = lv_event_get_code(e);
