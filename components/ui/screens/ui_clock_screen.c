@@ -120,16 +120,12 @@ void ui_time_update(lv_timer_t *timer)
     // 获取当前时间
     gettimeofday(&timeval, NULL);
     timeinfo = localtime(&timeval.tv_sec);
-    char time_str[40];
-    sprintf(time_str, "%02d : %02d", timeinfo->tm_hour, timeinfo->tm_min);
-    lv_label_set_text_fmt(clock_screen.time.label, "%s", time_str);
-    char data_str[48];
-    sprintf(data_str, "%04d 年 %02d 月 %02d 日", timeinfo->tm_year+1900, timeinfo->tm_mon+1, timeinfo->tm_mday);
-    lv_label_set_text_fmt(clock_screen.date.label, "%s", data_str);
+    lv_label_set_text_fmt(clock_screen.time.label, "%02d : %02d", timeinfo->tm_hour, timeinfo->tm_min);
+    lv_label_set_text_fmt(clock_screen.date.label, "%04d 年 %02d 月 %02d 日", timeinfo->tm_year+1900, timeinfo->tm_mon+1, timeinfo->tm_mday);
 
     // 更新指针位置
     lv_meter_set_indicator_end_value(clock_screen.meter, indic_hour,
-                                     (timeinfo->tm_hour <= 12 ? timeinfo->tm_hour : timeinfo->tm_hour - 12) * 5);
+                                     (timeinfo->tm_hour <= 12 ? timeinfo->tm_hour : timeinfo->tm_hour - 12) * 5 + timeinfo->tm_min/12);
     lv_meter_set_indicator_end_value(clock_screen.meter, indic_min, timeinfo->tm_min);
     lv_meter_set_indicator_end_value(clock_screen.meter, indic_sec, timeinfo->tm_sec);
 }

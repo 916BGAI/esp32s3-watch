@@ -272,14 +272,19 @@ static void msgbox_event_cb(lv_event_t *e)
         timeinfo->tm_year = lv_roller_get_selected(year_roller) + 120;
         timeinfo->tm_mon = lv_roller_get_selected(month_roller);
         timeinfo->tm_mday = lv_roller_get_selected(day_roller)+1;
+        timeinfo->tm_isdst = -1;
     } else if (code == LV_EVENT_CLICKED && obj == time_app->time.contanier) {
         const lv_obj_t *hour_roller = lv_obj_get_child(mbox, 3);
         const lv_obj_t *min_roller = lv_obj_get_child(mbox, 4);
         timeinfo->tm_hour = lv_roller_get_selected(hour_roller);
         timeinfo->tm_min = lv_roller_get_selected(min_roller);
         timeinfo->tm_sec = 0;
+        timeinfo->tm_isdst = -1;
     }
+
     new_time.tv_sec = mktime(timeinfo);
+    new_time.tv_usec = 0;
+
     if (settimeofday(&new_time, NULL) == -1) {
         LV_LOG_USER("settimeofday error");
         get_time_from_nvs();
@@ -287,11 +292,8 @@ static void msgbox_event_cb(lv_event_t *e)
     LV_LOG_USER("Time and date has been successfully set!\n");
     lvgl_port_unlock();
 
-    char time_str[24], data_str[39];
-    sprintf(time_str, "%02d:%02d", timeinfo->tm_hour, timeinfo->tm_min);
-    lv_label_set_text_fmt(time_app->time.label2, "%s", time_str);
-    sprintf(data_str, "%04d年%02d月%02d日", timeinfo->tm_year+1900, timeinfo->tm_mon+1, timeinfo->tm_mday);
-    lv_label_set_text_fmt(time_app->date.label2, "%s", data_str);
+    lv_label_set_text_fmt(time_app->time.label2, "%02d:%02d", timeinfo->tm_hour, timeinfo->tm_min);
+    lv_label_set_text_fmt(time_app->date.label2, "%04d年%02d月%02d日", timeinfo->tm_year+1900, timeinfo->tm_mon+1, timeinfo->tm_mday);
 
     set_time_to_nvs();
     lv_msgbox_close(mbox);
